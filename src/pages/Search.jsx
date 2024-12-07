@@ -1,18 +1,8 @@
 import Dropdown from "../components/Dropdown";
-import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LoginModal from "../components/LoginModal";
-import RegisterModal from "../components/RegisterModal";
+import Header from "../components/Header";
 
 function Search() {
-    // eslint-disable-next-line no-undef
-    const [showLogin, setShowLogin] = useState(false);
-    // eslint-disable-next-line no-undef
-    const [showRegister, setShowRegister] = useState(false);
-
-    const toggleLogin = () => setShowLogin(!showLogin);
-    const toggleRegister = () => setShowRegister(!showRegister);
-
     const location = useLocation();
     const navigate = useNavigate();
     const searchResults = location.state?.results || []; // Retrieve passed state
@@ -28,30 +18,7 @@ function Search() {
     return (
         <div className="App">
             {/* Header */}
-            <header className="App-header flex items-center justify-between fixed top-0 left-0 w-full p-4 bg-white shadow-md z-10">
-                <div className="flex items-center">
-                    <a
-                        href="/"
-                        className="text-3xl font-bold text-gray-800 hover:text-blue-500"
-                    >
-                        Mess Finder
-                    </a>
-                </div>
-                <div className="flex space-x-4">
-                    <button
-                        onClick={toggleLogin}
-                        className="text-gray-800 hover:text-blue-500 px-4 py-2 rounded-md transition-colors"
-                    >
-                        Login
-                    </button>
-                    <button
-                        onClick={toggleRegister}
-                        className="text-gray-800 hover:text-blue-500 px-4 py-2 rounded-md transition-colors"
-                    >
-                        Register
-                    </button>
-                </div>
-            </header>
+            < Header />
 
             {/* Dropdown below the header */}
             <div className="mt-20">
@@ -177,12 +144,6 @@ function Search() {
                     </div>
                 </div>
             </div>
-
-            {/* Login Modal */}
-            {showLogin && <LoginModal closeModal={toggleLogin} />}
-
-            {/* Register Modal */}
-            {showRegister && <RegisterModal closeModal={toggleRegister} />}
         </div>
     );
 }

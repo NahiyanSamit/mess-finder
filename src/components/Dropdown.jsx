@@ -81,7 +81,7 @@ const mockMessData = [
         name: "Mess C",
         district: "Comilla",
         dist_id: "1",
-        upazila: "Upazila 3",
+        upazila: "Chandina",
         upazila_id: "4",
         details: "Healthy food with vegetarian options.",
     },
