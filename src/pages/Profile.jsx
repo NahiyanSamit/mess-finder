@@ -23,7 +23,7 @@ export function Profile() {
             <div className="absolute top-4 left-4">
                 <a
                     href="/"
-                    className="text-3xl font-bold text-gray-800 hover:"
+                    className="text-3xl font-bold text-gray-800 hover:text-blue-500"
                 >
                     Mess Finder
                 </a>
