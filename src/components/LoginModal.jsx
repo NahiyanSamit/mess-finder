@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const LoginModal = ({ closeModal }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleOutsideClick = (e) => {
         if (e.target.classList.contains("fixed")) {
@@ -21,6 +24,7 @@ const LoginModal = ({ closeModal }) => {
         e.preventDefault();
         console.log("Login Submitted:", { email, password });
         closeModal(); // Close the modal after submitting
+        navigate("/profile");
     };
 
     return (
