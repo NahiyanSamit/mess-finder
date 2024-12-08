@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessDetails } from "../components/MessDetails";
+import { Link } from "react-router-dom";
 
 export function Profile() {
     const navigate = useNavigate();
@@ -22,17 +23,16 @@ export function Profile() {
         console.log("User logged out");
         navigate("/"); // Redirect to login page after logout
     };
-    
 
     return (
         <div className="relative flex flex-col">
             <div className="absolute top-4 left-4">
-                <a
-                    href="/"
+                <Link
+                    to="/"
                     className="text-3xl font-bold text-gray-800 hover:text-blue-500"
                 >
                     Mess Finder
-                </a>
+                </Link>
             </div>
             <div className="profile-page max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
                 <div className="profile-header flex justify-between items-center mb-6">
