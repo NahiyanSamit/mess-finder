@@ -1,10 +1,15 @@
 // ./pages/Profile.jsx
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MessDetails } from "../components/MessDetails";
 
 export function Profile() {
     const navigate = useNavigate();
+
+    const [showMessDetails, setMessDetails] = useState(false);
+
+    const addMessDetails = () => setMessDetails(!showMessDetails);
 
     const user = {
         name: "John Doe",
@@ -17,6 +22,7 @@ export function Profile() {
         console.log("User logged out");
         navigate("/"); // Redirect to login page after logout
     };
+    
 
     return (
         <div className="relative flex flex-col">
@@ -55,7 +61,19 @@ export function Profile() {
                         </p>
                     </div>
                 </div>
+                <div className="flex justify-center mt-4 h-full">
+                    <button
+                        onClick={addMessDetails}
+                        className="add-mess-button bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                    >
+                        Add Mess Details
+                    </button>
+                </div>
             </div>
+            {/* Toogle modal */}
+            {showMessDetails && <MessDetails closeModal={addMessDetails} />}
         </div>
     );
 }
+
+export default Profile;
