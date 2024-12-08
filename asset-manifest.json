@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/mess-finder/static/css/main.c54c89c6.css",
+    "main.js": "/mess-finder/static/js/main.b95c53d8.js",
+    "static/js/488.045b9b09.chunk.js": "/mess-finder/static/js/488.045b9b09.chunk.js",
+    "index.html": "/mess-finder/index.html",
+    "main.c54c89c6.css.map": "/mess-finder/static/css/main.c54c89c6.css.map",
+    "main.b95c53d8.js.map": "/mess-finder/static/js/main.b95c53d8.js.map",
+    "488.045b9b09.chunk.js.map": "/mess-finder/static/js/488.045b9b09.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c54c89c6.css",
+    "static/js/main.b95c53d8.js"
+  ]
+}
