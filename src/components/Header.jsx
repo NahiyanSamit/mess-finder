@@ -13,7 +13,7 @@ const Header = () => {
             <header className="App-header flex items-center justify-between fixed top-0 left-0 w-full p-4 bg-white shadow-md z-10">
                 <div className="flex items-center">
                     <a
-                        href="/"
+                        href="#/"
                         className="text-3xl font-bold text-gray-800 hover:text-blue-500"
                     >
                         Mess Finder

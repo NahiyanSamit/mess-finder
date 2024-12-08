@@ -11,7 +11,7 @@ const mockMessData = [
         dist_id: "1",
         upazila: "Barura",
         upazila_id: "2",
-        details: "Affordable meals with great quality.",
+        details: "lorem ipsum dolor sit amet",
     },
     {
         id: 2,
@@ -20,7 +20,7 @@ const mockMessData = [
         dist_id: "1",
         upazila: "Upazila 2",
         upazila_id: "2",
-        details: "Healthy food with vegetarian options.",
+        details: "lorem ipsum dolor sit amet",
     },
     {
         id: 3,
@@ -29,7 +29,7 @@ const mockMessData = [
         dist_id: "1",
         upazila: "Barura",
         upazila_id: "2",
-        details: "Affordable meals with great quality.",
+        details: "lorem ipsum dolor sit amet",
     },
     {
         id: 4,
@@ -38,7 +38,7 @@ const mockMessData = [
         dist_id: "1",
         upazila: "Upazila 2",
         upazila_id: "2",
-        details: "Healthy food with vegetarian options.",
+        details: "lorem ipsum dolor sit amet",
     },
     {
         id: 5,
@@ -47,7 +47,7 @@ const mockMessData = [
         dist_id: "1",
         upazila: "Barura",
         upazila_id: "2",
-        details: "Affordable meals with great quality.",
+        details: "lorem ipsum dolor sit amet",
     },
     {
         id: 6,
@@ -56,7 +56,7 @@ const mockMessData = [
         dist_id: "1",
         upazila: "Upazila 2",
         upazila_id: "2",
-        details: "Healthy food with vegetarian options.",
+        details: "lorem ipsum dolor sit amet",
     },
     {
         id: 7,
@@ -65,7 +65,7 @@ const mockMessData = [
         dist_id: "1",
         upazila: "Barura",
         upazila_id: "2",
-        details: "Affordable meals with great quality.",
+        details: "lorem ipsum dolor sit amet",
     },
     {
         id: 8,
@@ -74,7 +74,7 @@ const mockMessData = [
         dist_id: "1",
         upazila: "Upazila 2",
         upazila_id: "2",
-        details: "Healthy food with vegetarian options.",
+        details: "lorem ipsum dolor sit amet",
     },
     {
         id: 9,
@@ -83,7 +83,7 @@ const mockMessData = [
         dist_id: "1",
         upazila: "Chandina",
         upazila_id: "4",
-        details: "Healthy food with vegetarian options.",
+        details: "lorem ipsum dolor sit amet",
     },
 ];
 
