@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -18,6 +16,19 @@
 .env.test.local
 .env.production.local
 
+# npm debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# backend
+/backend/node_modules
+/backend/.env
+/backend/.env.local
+/backend/.env.development.local
+/backend/.env.test.local
+/backend/.env.production.local
+/backend/npm-debug.log*
+
+# Optional: if you have database files
+/backend/data

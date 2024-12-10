@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API from "../api/api"; // Import the API utility
 
 const RegisterModal = ({ closeModal }) => {
     const [username, setUsername] = useState("");
@@ -44,22 +45,47 @@ const RegisterModal = ({ closeModal }) => {
         };
     }, [handleOutsideClick]);
 
-    const handleSubmit = (e) => {
+    // Handle form submission
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (userType === "messManager" && !phoneValid) {
-            alert("Please enter a valid phone number.");
+        // Client-side validation for password matching
+        if (password !== confirmPassword) {
+            alert("Passwords do not match");
             return;
         }
 
-        console.log("Register Submitted:", {
-            username,
-            email,
-            password,
-            userType,
-            phone,
-        });
-        closeModal(); // Close the modal after submitting
+        // Show loading or any other indication if necessary
+        try {
+            const response = await API.post(
+                "http://localhost:5000/api/register",
+                {
+                    username,
+                    email,
+                    password,
+                    userType,
+                    phone,
+                }
+            );
+
+            // Handle successful registration
+            alert(response.data.message); // or any other success indication
+            closeModal(); // Close the modal after submitting
+
+            // Optionally reset the form
+            setUsername("");
+            setEmail("");
+            setPassword("");
+            setConfirmPassword("");
+            setPhone("");
+        } catch (error) {
+            console.error("Error during registration:", error);
+            alert(
+                error.response
+                    ? error.response.data.message
+                    : "An error occurred."
+            );
+        }
     };
 
     return (

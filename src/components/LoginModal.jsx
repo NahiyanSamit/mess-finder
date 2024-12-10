@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API from "../api/api"; // Import the API utility
 
 const LoginModal = ({ closeModal }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState(""); // To display error messages
     const navigate = useNavigate();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -12,20 +14,36 @@ const LoginModal = ({ closeModal }) => {
             closeModal();
         }
     };
-    
+
     React.useEffect(() => {
         document.addEventListener("click", handleOutsideClick);
         return () => {
             document.removeEventListener("click", handleOutsideClick);
         };
     }, [handleOutsideClick]);
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Login Submitted:", { email, password });
-        closeModal(); // Close the modal after submitting
-        navigate("/profile");
+    
+        try {
+            const response = await API.post("http://localhost:5000/api/login", {
+                email,
+                password,
+            });
+    
+            if (response.data.success) {
+                console.log("Login Successful:", response.data.user);
+                closeModal(); // Close the modal
+                navigate("/profile"); // Redirect to the profile page
+            } else {
+                setErrorMessage(response.data.message); // Display error message
+            }
+        } catch (error) {
+            console.error("Error during login:", error);
+            setErrorMessage("An error occurred during login. Please try again.");
+        }
     };
+    
+    
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
@@ -66,6 +84,9 @@ const LoginModal = ({ closeModal }) => {
                             required
                         />
                     </div>
+                    {errorMessage && (
+                        <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+                    )}
                     <div className="flex justify-between items-center">
                         <button
                             type="submit"
