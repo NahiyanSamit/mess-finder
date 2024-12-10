@@ -4,6 +4,9 @@ const RegisterModal = ({ closeModal }) => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [isPasswordValid, setIsPasswordValid] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
     const [userType, setUserType] = useState("user"); // default to 'user'
     const [phone, setPhone] = useState(""); // state for phone number
     const [phoneValid, setPhoneValid] = useState(true); // Track phone validation
@@ -14,6 +17,15 @@ const RegisterModal = ({ closeModal }) => {
         if (e.target.classList.contains("fixed")) {
             closeModal();
         }
+    };
+    const handlePasswordChange = (e) => {
+        const value = e.target.value;
+        setPassword(value);
+
+        // Regex to check password criteria
+        const passwordRegex =
+            /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+        setIsPasswordValid(passwordRegex.test(value));
     };
 
     const handlePhoneChange = (e) => {
@@ -101,15 +113,57 @@ const RegisterModal = ({ closeModal }) => {
                         >
                             Password
                         </label>
+                        <div className="relative">
+                            <input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => handlePasswordChange(e)}
+                                className="w-full p-2 border border-gray-300 rounded-md"
+                                placeholder="Enter your password"
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute inset-y-0 right-2 flex items-center text-gray-500"
+                            >
+                                {showPassword ? "Hide" : "Show"}
+                            </button>
+                        </div>
+                        {!isPasswordValid && (
+                            <p className="text-red-500 text-sm mt-1">
+                                Password must be at least 8 characters long,
+                                include an uppercase letter, a number, and a
+                                special character.
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Re-enter Password input */}
+                    <div className="mb-4">
+                        <label
+                            htmlFor="confirmPassword"
+                            className="block text-sm font-medium"
+                        >
+                            Re-enter Password
+                        </label>
                         <input
-                            id="password"
+                            id="confirmPassword"
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter your password"
+                            placeholder="Re-enter your password"
                             required
                         />
+                        {password &&
+                            confirmPassword &&
+                            password !== confirmPassword && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    Passwords do not match.
+                                </p>
+                            )}
                     </div>
 
                     {/* User type select */}
