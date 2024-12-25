@@ -25,15 +25,20 @@ const LoginModal = ({ closeModal }) => {
         e.preventDefault();
     
         try {
-            const response = await API.post("http://localhost:5000/api/login", {
+            const response = await API.post("http://localhost:5000/api/auth/login", {
                 email,
                 password,
             });
     
             if (response.data.success) {
+                const {username, email, userType} = response.data.user;
+
+                localStorage.setItem("user", JSON.stringify({username, email, userType}));
+                console.log("user data", {username, email, userType});
+
                 console.log("Login Successful:", response.data.user);
                 closeModal(); // Close the modal
-                navigate("/profile"); // Redirect to the profile page
+                navigate("/profile", { state: {username, email, userType}}); // Redirect to the profile page
             } else {
                 setErrorMessage(response.data.message); // Display error message
             }

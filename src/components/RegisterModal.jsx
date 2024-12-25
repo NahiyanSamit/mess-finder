@@ -58,7 +58,7 @@ const RegisterModal = ({ closeModal }) => {
         // Show loading or any other indication if necessary
         try {
             const response = await API.post(
-                "http://localhost:5000/api/register",
+                "http://localhost:5000/api/auth/register" ,
                 {
                     username,
                     email,

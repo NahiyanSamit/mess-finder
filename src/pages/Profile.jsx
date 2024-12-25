@@ -2,26 +2,30 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { MessDetails } from "../components/MessDetails";
 import { Link } from "react-router-dom";
 
 export function Profile() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [showMessDetails, setMessDetails] = useState(false);
 
     const addMessDetails = () => setMessDetails(!showMessDetails);
 
-    const user = {
-        name: "John Doe",
-        email: "john.doe@example.com",
-        bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vel velit eu nunc luctus pharetra.",
-    };
+    // Retrieve user data from location state
+    const { username, email, userType} = location.state || {};
+
+    // Fallback to localStorage if state is unavailable
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const usernameFromStorage = username || storedUser?.username;
+    const emailFromStorage = email || storedUser?.email;
+    const userTypeFromStorage = userType || storedUser?.userType;
 
     const handleLogout = () => {
-        // Perform the logout action (you can add logic for clearing authentication here)
-        console.log("User logged out");
-        navigate("/"); // Redirect to login page after logout
+        localStorage.removeItem("user");
+        navigate("/");
     };
 
     return (
@@ -37,7 +41,7 @@ export function Profile() {
             <div className="profile-page max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
                 <div className="profile-header flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">
-                        Welcome, {user.name}!
+                        Welcome, {usernameFromStorage}!
                     </h1>
                     <button
                         onClick={handleLogout}
@@ -53,11 +57,11 @@ export function Profile() {
                         </h2>
                         <p className="text-gray-600 mb-2">
                             <strong className="text-gray-800">Email:</strong>{" "}
-                            {user.email}
+                            {emailFromStorage}
                         </p>
                         <p className="text-gray-600">
                             <strong className="text-gray-800">Bio:</strong>{" "}
-                            {user.bio}
+                            {userTypeFromStorage}
                         </p>
                     </div>
                 </div>

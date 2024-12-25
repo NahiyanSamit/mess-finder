@@ -1,24 +1,32 @@
 import Dropdown from "../components/Dropdown";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import React from "react";
 
 function Search() {
     const location = useLocation();
     const navigate = useNavigate();
     const searchResults = location.state?.results || []; // Retrieve passed state
 
+
     const filterSearch = () => {
         // Implement search filtering logic here
     };
 
     const messDetails = (mess) => {
-        navigate(`/Mess/${mess.id}`, { state: { mess } });
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (storedUser) {
+            navigate(`/Mess/${mess.id}`, { state: { mess } });
+        }
+        else {
+            alert("Please login to view mess details");
+        }
     };
 
     return (
         <div className="App">
             {/* Header */}
-            < Header />
+            <Header />
 
             {/* Dropdown below the header */}
             <div className="mt-20">

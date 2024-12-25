@@ -1,7 +1,21 @@
 const express = require("express");
+const crypto = require("crypto"); // For password encryption
 const Account = require("../models/Account");
 const router = express.Router();
 
+// Utility functions for password hashing
+const encryptPassword = (password) => {
+    const salt = crypto.randomBytes(16).toString("hex"); // Generate a random salt
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
+    return { salt, hash };
+};
+
+const verifyPassword = (password, salt, hash) => {
+    const hashToVerify = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
+    return hash === hashToVerify;
+};
+
+// Register Route
 router.post("/register", async (req, res) => {
     const { username, email, password, userType, phone } = req.body;
 
@@ -11,11 +25,14 @@ router.post("/register", async (req, res) => {
         return res.status(400).json({ message: "Email already exists" });
     }
 
-    // Store plain-text password (for debugging only)
+    // Encrypt the password
+    const { salt, hash } = encryptPassword(password);
+
     const newAccount = new Account({
         username,
         email,
-        password, // Store plain-text password temporarily
+        password: hash, // Store the hashed password
+        salt, // Store the salt
         userType,
         phone,
     });
@@ -28,7 +45,7 @@ router.post("/register", async (req, res) => {
     }
 });
 
-
+// Login Route
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
@@ -41,8 +58,9 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        // Directly compare plain-text passwords
-        if (user.password !== password) {
+        // Verify the password
+        const isPasswordValid = verifyPassword(password, user.salt, user.password);
+        if (!isPasswordValid) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid password",
@@ -59,6 +77,5 @@ router.post("/login", async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 });
-
 
 module.exports = router;

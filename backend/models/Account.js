@@ -14,6 +14,10 @@ const accountSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    salt: { 
+        type: String, 
+        required: true 
+    },
     userType: {
         type: String,
         enum: ["user", "messManager"],
