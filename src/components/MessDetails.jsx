@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
+import districts from "./districts.json";
+import upazilas from "./upazilas.json";
 
 const MessDetails = ({ closeModal }) => {
     const [messName, setMessName] = useState("");
-    const [location, setLocation] = useState("");
+    const [address, setAddress] = useState("");
+    const [messType, setMessType] = useState(""); // Gender of the mess
+    const [selectedDistrict, setSelectedDistrict] = useState("");
+    const [selectedUpazila, setSelectedUpazila] = useState("");
+    const [filteredUpazilas, setFilteredUpazilas] = useState([]);
     const [rooms, setRooms] = useState([]); // Array of rooms
     const [selectedRoom, setSelectedRoom] = useState(null); // Room ID for adding person details
     const [personDetails, setPersonDetails] = useState({
@@ -24,6 +30,16 @@ const MessDetails = ({ closeModal }) => {
             document.removeEventListener("click", handleOutsideClick);
         };
     }, []);
+    useEffect(() => {
+        if (selectedDistrict) {
+            const filtered = upazilas.filter(
+                (sub) => sub.district_id === selectedDistrict
+            );
+            setFilteredUpazilas(filtered);
+        } else {
+            setFilteredUpazilas([]);
+        }
+    }, [selectedDistrict]);
 
     const addRoom = () => {
         setRooms([...rooms, { id: rooms.length + 1, people: [] }]);
@@ -50,7 +66,10 @@ const MessDetails = ({ closeModal }) => {
         e.preventDefault();
         console.log("Mess Details Submitted:", {
             messName,
-            location,
+            messType,
+            address,
+            selectedDistrict,
+            selectedUpazila,
             rooms,
         });
         closeModal();
@@ -77,20 +96,75 @@ const MessDetails = ({ closeModal }) => {
                             required
                         />
                     </div>
-
-                    {/* Location */}
+                    {/* gender select */}
                     <div className="mb-4">
-                        <label className="block text-sm font-medium">
-                            Location
-                        </label>
-                        <input
-                            type="text"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
+                        <label className="block text-sm font-medium">Mess Type</label>
+                        <select
+                            value={messType}
+                            onChange={(e) => setMessType(e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter location"
+                            required
+                        >
+                            <option value="">-- Select Gender --</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    {/* Address*/}
+                    
+                    <div className="mb-1.5">
+                        <label className="block text-sm font-medium">Address</label>
+                        <input
+                            type="text" 
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            className="w-full p-2 border border-gray-300 rounded-md"
+                            placeholder="Enter address"
                             required
                         />
+                    </div>
+
+                    {/* District and Upazila */}
+                    <div className="mb-1.5">
+                        <select
+                            id="district"
+                            value={selectedDistrict}
+                            onChange={(e) =>
+                                setSelectedDistrict(e.target.value)
+                            }
+                            className="w-64 py-2 px-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">-- Select District --</option>
+                            {districts.map((district) => (
+                                <option key={district.id} value={district.id}>
+                                    {district.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="mb-1.5">
+                        <select
+                            id="upazila"
+                            value={selectedUpazila}
+                            onChange={(e) => setSelectedUpazila(e.target.value)}
+                            disabled={!selectedDistrict}
+                            className="w-64 py-2 px-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">-- Select Upazila --</option>
+                            {filteredUpazilas.length > 0 ? (
+                                filteredUpazilas.map((upazilas) => (
+                                    <option
+                                        key={upazilas.id}
+                                        value={upazilas.id}
+                                    >
+                                        {upazilas.name}
+                                    </option>
+                                ))
+                            ) : (
+                                <option disabled>No Upazilas Available</option>
+                            )}
+                        </select>
                     </div>
 
                     {/* Rooms */}
@@ -210,7 +284,6 @@ const MessDetails = ({ closeModal }) => {
                                             })
                                         }
                                         className="w-full p-2 border border-gray-300 rounded-md"
-                                        required
                                     />
                                 </div>
                                 <div className="flex justify-between items-center">

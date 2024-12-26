@@ -1,5 +1,5 @@
 const express = require("express");
-const crypto = require("crypto"); // For password encryption
+const crypto = require("crypto");
 const Account = require("../models/Account");
 const router = express.Router();
 

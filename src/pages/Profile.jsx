@@ -65,14 +65,16 @@ export function Profile() {
                         </p>
                     </div>
                 </div>
-                <div className="flex justify-center mt-4 h-full">
-                    <button
-                        onClick={addMessDetails}
-                        className="add-mess-button bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                    >
-                        Add Mess Details
-                    </button>
-                </div>
+                {userTypeFromStorage === "messManager" && (
+                    <div className="flex justify-center mt-4 h-full">
+                        <button
+                            onClick={addMessDetails}
+                            className="add-mess-button bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                        >
+                            Add Mess Details
+                        </button>
+                    </div>
+                )}
             </div>
             {/* Toogle modal */}
             {showMessDetails && <MessDetails closeModal={addMessDetails} />}
