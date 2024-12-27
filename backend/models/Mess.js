@@ -1,18 +1,7 @@
 const mongoose = require("mongoose");
 
 const messOccupantSchema = new mongoose.Schema({
-    name : {
-        type : String,
-        required : true,
-    },
-    age : {
-        type : Number,
-        required : true,
-    },
-    phone : {
-        type : String,
-    },
-    messManagerEmail : {
+    managerEmail : {
         type : String,
         required : true,
     },
@@ -20,7 +9,7 @@ const messOccupantSchema = new mongoose.Schema({
         type : String,
         required : true,
     },
-    messTytpe : {
+    messType : {
         type : String,
         required : true,
     },
@@ -36,16 +25,12 @@ const messOccupantSchema = new mongoose.Schema({
         type : String,
         required : true,
     },
-    roomNo : {
-        type : Number,
-        required : true,
-    },
-    totalOccupants : {
+    totalRooms : {
         type : Number,
         required : true,
     },
 });
 
-const Account = mongoose.model("MessOccupants", messOccupantSchema);
+const Mess = mongoose.model("Mess", messOccupantSchema);
 
-module.exports = Account;
+module.exports = Mess;

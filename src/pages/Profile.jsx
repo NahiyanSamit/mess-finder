@@ -71,7 +71,7 @@ export function Profile() {
                             onClick={addMessDetails}
                             className="add-mess-button bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
                         >
-                            Add Mess Details
+                            Add Mess
                         </button>
                     </div>
                 )}

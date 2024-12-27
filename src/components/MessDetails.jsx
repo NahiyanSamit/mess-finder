@@ -1,35 +1,23 @@
 import React, { useState, useEffect } from "react";
 import districts from "./districts.json";
 import upazilas from "./upazilas.json";
+import API from "../api/api";
+import { AddPerson } from "./addPerson";
+import { useLocation } from "react-router-dom";
 
 const MessDetails = ({ closeModal }) => {
     const [messName, setMessName] = useState("");
     const [address, setAddress] = useState("");
-    const [messType, setMessType] = useState(""); // Gender of the mess
+    const [messType, setMessType] = useState("");
     const [selectedDistrict, setSelectedDistrict] = useState("");
     const [selectedUpazila, setSelectedUpazila] = useState("");
     const [filteredUpazilas, setFilteredUpazilas] = useState([]);
-    const [rooms, setRooms] = useState([]); // Array of rooms
-    const [selectedRoom, setSelectedRoom] = useState(null); // Room ID for adding person details
-    const [personDetails, setPersonDetails] = useState({
-        name: "",
-        age: "",
-        phone: "",
-    });
+    const [rooms, setRooms] = useState([]);
+    const [selectedRoom, setSelectedRoom] = useState(null);
+    const location = useLocation();
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const email = location.state?.email || storedUser?.email;
 
-    // Close modal if clicked outside
-    const handleOutsideClick = (e) => {
-        if (e.target.classList.contains("fixed")) {
-            closeModal();
-        }
-    };
-
-    useEffect(() => {
-        document.addEventListener("click", handleOutsideClick);
-        return () => {
-            document.removeEventListener("click", handleOutsideClick);
-        };
-    }, []);
     useEffect(() => {
         if (selectedDistrict) {
             const filtered = upazilas.filter(
@@ -49,29 +37,60 @@ const MessDetails = ({ closeModal }) => {
         setSelectedRoom(roomId);
     };
 
-    const handlePersonDetailsSubmit = (e) => {
-        e.preventDefault();
-        setRooms(
-            rooms.map((room) =>
+    const addPersonToRoom = (personDetails) => {
+        setRooms((prevRooms) =>
+            prevRooms.map((room) =>
                 room.id === selectedRoom
                     ? { ...room, people: [...room.people, personDetails] }
                     : room
             )
         );
-        setSelectedRoom(null); // Close the form
-        setPersonDetails({ name: "", age: "", phone: "" }); // Reset the form
+        setSelectedRoom(null); // Close the AddPerson modal
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Mess Details Submitted:", {
-            messName,
-            messType,
-            address,
-            selectedDistrict,
-            selectedUpazila,
-            rooms,
-        });
+
+        if (rooms.length === 0) {
+            alert("Please add at least one room.");
+            return;
+        }
+
+        const roomsWithoutOccupants = rooms.filter(
+            (room) => room.people.length === 0
+        );
+        if (roomsWithoutOccupants.length > 0) {
+            alert("Each room must have at least one occupant.");
+            return;
+        }
+        const managerEmail = email;
+        const upazila = selectedUpazila;
+        const district = selectedDistrict;
+        const totalRooms = rooms.length;
+
+        try {
+            const response = await API.post("http://localhost:5000/api/messroute/add", {
+                managerEmail,
+                messName,
+                messType,
+                address,
+                upazila,
+                district,
+                totalRooms,
+            });
+
+            if (response.data.success) {
+                alert("Mess details added successfully!");
+                closeModal();
+            } else {
+                console.log("Failed to add mess details. Please try again.");
+                closeModal();
+            }
+        } catch (error) {
+            console.error("Error adding mess details:", error);
+            alert("An error occurred. Please try again.");
+            closeModal();
+        }
         closeModal();
     };
 
@@ -82,12 +101,12 @@ const MessDetails = ({ closeModal }) => {
                     Add Mess Details
                 </h2>
                 <form onSubmit={handleSubmit}>
-                    {/* Mess Name */}
                     <div className="mb-4">
-                        <label className="block text-sm font-medium">
+                        <label htmlFor="messName" className="block text-sm font-medium">
                             Mess Name
                         </label>
                         <input
+                            id="messName"
                             type="text"
                             value={messName}
                             onChange={(e) => setMessName(e.target.value)}
@@ -96,10 +115,12 @@ const MessDetails = ({ closeModal }) => {
                             required
                         />
                     </div>
-                    {/* gender select */}
                     <div className="mb-4">
-                        <label className="block text-sm font-medium">Mess Type</label>
+                        <label htmlFor="messType" className="block text-sm font-medium">
+                            Mess Type
+                        </label>
                         <select
+                            id="messType"
                             value={messType}
                             onChange={(e) => setMessType(e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md"
@@ -110,12 +131,13 @@ const MessDetails = ({ closeModal }) => {
                             <option value="female">Female</option>
                         </select>
                     </div>
-                    {/* Address*/}
-                    
-                    <div className="mb-1.5">
-                        <label className="block text-sm font-medium">Address</label>
+                    <div className="mb-4">
+                        <label htmlFor="address" className="block text-sm font-medium">
+                            Address
+                        </label>
                         <input
-                            type="text" 
+                            id="address"
+                            type="text"
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md"
@@ -123,16 +145,16 @@ const MessDetails = ({ closeModal }) => {
                             required
                         />
                     </div>
-
-                    {/* District and Upazila */}
-                    <div className="mb-1.5">
+                    <div className="mb-4">
+                        <label htmlFor="district" className="block text-sm font-medium">
+                            District
+                        </label>
                         <select
                             id="district"
                             value={selectedDistrict}
-                            onChange={(e) =>
-                                setSelectedDistrict(e.target.value)
-                            }
-                            className="w-64 py-2 px-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onChange={(e) => setSelectedDistrict(e.target.value)}
+                            className="w-full p-2 border border-gray-300 rounded-md"
+                            required
                         >
                             <option value="">-- Select District --</option>
                             {districts.map((district) => (
@@ -142,36 +164,27 @@ const MessDetails = ({ closeModal }) => {
                             ))}
                         </select>
                     </div>
-
-                    <div className="mb-1.5">
+                    <div className="mb-4">
+                        <label htmlFor="upazila" className="block text-sm font-medium">
+                            Upazila
+                        </label>
                         <select
                             id="upazila"
                             value={selectedUpazila}
                             onChange={(e) => setSelectedUpazila(e.target.value)}
                             disabled={!selectedDistrict}
-                            className="w-64 py-2 px-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-2 border border-gray-300 rounded-md"
+                            required
                         >
                             <option value="">-- Select Upazila --</option>
-                            {filteredUpazilas.length > 0 ? (
-                                filteredUpazilas.map((upazilas) => (
-                                    <option
-                                        key={upazilas.id}
-                                        value={upazilas.id}
-                                    >
-                                        {upazilas.name}
-                                    </option>
-                                ))
-                            ) : (
-                                <option disabled>No Upazilas Available</option>
-                            )}
+                            {filteredUpazilas.map((upazila) => (
+                                <option key={upazila.id} value={upazila.id}>
+                                    {upazila.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
-
-                    {/* Rooms */}
                     <div className="mb-4">
-                        <label className="block text-sm font-medium">
-                            Rooms
-                        </label>
                         <button
                             type="button"
                             onClick={addRoom}
@@ -179,44 +192,34 @@ const MessDetails = ({ closeModal }) => {
                         >
                             Add Room
                         </button>
-                        {/* Scrollable container for the room list */}
-                        <div className="max-h-40 overflow-y-scroll border border-gray-300 rounded-md p-2">
-                            <ul>
-                                {rooms.map((room) => (
-                                    <li key={room.id} className="mb-2">
-                                        Room {room.id}{" "}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                openPersonDetailsForm(room.id)
-                                            }
-                                            className="text-blue-500 underline"
-                                        >
-                                            Add Person
-                                        </button>
-                                        <ul className="pl-4 mt-2">
-                                            {room.people.map(
-                                                (person, index) => (
-                                                    <li key={index}>
-                                                        {person.name} (Age:{" "}
-                                                        {person.age}, Phone:{" "}
-                                                        {person.phone})
-                                                    </li>
-                                                )
-                                            )}
-                                        </ul>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        <ul>
+                            {rooms.map((room) => (
+                                <li key={room.id} className="mb-2">
+                                    Room {room.id}{" "}
+                                    <button
+                                        type="button"
+                                        onClick={() => openPersonDetailsForm(room.id)}
+                                        className="text-blue-500 underline"
+                                    >
+                                        Add Person
+                                    </button>
+                                    <ul>
+                                        {room.people.map((person, index) => (
+                                            <li key={index}>
+                                                {person.name} (Age: {person.age}, Phone: {person.phone})
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-
                     <div className="flex justify-between items-center">
                         <button
                             type="submit"
-                            className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-500"
+                            className="bg-blue-600 text-white py-2 px-4 rounded-md"
                         >
-                            Submit
+                            Save
                         </button>
                         <button
                             type="button"
@@ -227,83 +230,12 @@ const MessDetails = ({ closeModal }) => {
                         </button>
                     </div>
                 </form>
-
-                {/* Person Details Form */}
                 {selectedRoom && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                        <div className="bg-white p-6 rounded-lg w-80 max-w-md">
-                            <h3 className="text-xl font-semibold mb-4">
-                                Add Person to Room {selectedRoom}
-                            </h3>
-                            <form onSubmit={handlePersonDetailsSubmit}>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium">
-                                        Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={personDetails.name}
-                                        onChange={(e) =>
-                                            setPersonDetails({
-                                                ...personDetails,
-                                                name: e.target.value,
-                                            })
-                                        }
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium">
-                                        Age
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={personDetails.age}
-                                        onChange={(e) =>
-                                            setPersonDetails({
-                                                ...personDetails,
-                                                age: e.target.value,
-                                            })
-                                        }
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium">
-                                        Phone
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={personDetails.phone}
-                                        onChange={(e) =>
-                                            setPersonDetails({
-                                                ...personDetails,
-                                                phone: e.target.value,
-                                            })
-                                        }
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                    />
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <button
-                                        type="submit"
-                                        className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-500"
-                                    >
-                                        Save
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setSelectedRoom(null)}
-                                        className="text-gray-500 hover:text-gray-700"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                    <AddPerson
+                        roomId={selectedRoom}
+                        onAddPerson={addPersonToRoom}
+                        onCancel={() => setSelectedRoom(null)}
+                    />
                 )}
             </div>
         </div>
