@@ -1,21 +1,21 @@
-// ./pages/Profile.jsx
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { MessDetails } from "../components/MessDetails";
 import { Link } from "react-router-dom";
+import API from "../api/api";
+
 
 export function Profile() {
     const navigate = useNavigate();
     const location = useLocation();
 
     const [showMessDetails, setMessDetails] = useState(false);
-
-    const addMessDetails = () => setMessDetails(!showMessDetails);
+    const [hasMess, setHasMess] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Retrieve user data from location state
-    const { username, email, userType} = location.state || {};
+    const { username, email, userType } = location.state || {};
 
     // Fallback to localStorage if state is unavailable
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -23,10 +23,36 @@ export function Profile() {
     const emailFromStorage = email || storedUser?.email;
     const userTypeFromStorage = userType || storedUser?.userType;
 
+    useEffect(() => {
+        // Check if the user has a mess in the database
+        const fetchMessData = async () => {
+            try {
+                const response = await API.get(
+                    `http://localhost:5000/api/messroute/user/${emailFromStorage}`
+                );
+                if (response.data.success && response.data.mess) {
+                    setHasMess(true);
+                    console.log("Mess data:", response.data.mess);
+                }
+            } catch (error) {
+                console.error("Error fetching mess data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (emailFromStorage) {
+            fetchMessData();
+        }
+    }, [emailFromStorage]);
+    
+
     const handleLogout = () => {
         localStorage.removeItem("user");
         navigate("/");
     };
+
+    const addMessDetails = () => setMessDetails(!showMessDetails);
 
     return (
         <div className="relative flex flex-col">
@@ -66,17 +92,24 @@ export function Profile() {
                     </div>
                 </div>
                 {userTypeFromStorage === "messManager" && (
-                    <div className="flex justify-center mt-4 h-full">
-                        <button
-                            onClick={addMessDetails}
-                            className="add-mess-button bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                        >
-                            Add Mess
-                        </button>
+                    <div className="flex justify-center mt-4">
+                        {!loading && (
+                            <button
+                                onClick={addMessDetails}
+                                className={`add-mess-button py-2 px-4 rounded ${
+                                    hasMess
+                                        ? "bg-gray-400 text-white cursor-not-allowed"
+                                        : "bg-blue-500 text-white hover:bg-blue-600"
+                                }`}
+                                disabled={hasMess}
+                            >
+                                {hasMess ? "Mess Already Added" : "Add Mess"}
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
-            {/* Toogle modal */}
+            {/* Toggle modal */}
             {showMessDetails && <MessDetails closeModal={addMessDetails} />}
         </div>
     );

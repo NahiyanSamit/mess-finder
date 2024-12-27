@@ -28,9 +28,9 @@ const connectDB = async () => {
 };
 
 // Routes
-app.use(authRoutes);
-app.use(messRoutes);
-app.use(occupantRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/messroute", messRoutes);
+app.use("/api/occupantroute", occupantRoutes);
 
 // 404 Error Handling
 app.use((req, res, next) => {
