@@ -196,7 +196,7 @@ const MessDetails = ({ closeModal }) => {
                             {rooms.map((room) => (
                                 <li key={room.id} className="mb-2">
                                     Room {room.id}{" "}
-                                    <button
+                                    {/* <button
                                         type="button"
                                         onClick={() => openPersonDetailsForm(room.id)}
                                         className="text-blue-500 underline"
@@ -209,7 +209,7 @@ const MessDetails = ({ closeModal }) => {
                                                 {person.name} (Age: {person.age}, Phone: {person.phone})
                                             </li>
                                         ))}
-                                    </ul>
+                                    </ul> */}
                                 </li>
                             ))}
                         </ul>

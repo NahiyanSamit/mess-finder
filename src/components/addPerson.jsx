@@ -44,7 +44,7 @@ const AddPerson = ({ roomId, onAddPerson, onCancel }) => {
                 alert("Person added successfully");
                 onCancel();
             } else {
-                alert("An error occurred. Please try again.");
+                onCancel();
             }
         } catch (error) {
             console.error("Error adding person:", error);
