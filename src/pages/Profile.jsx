@@ -67,9 +67,10 @@ export function Profile() {
                 const response = await API.get(
                     `http://localhost:5000/api/occupantroute/room/${emailFromStorage}`
                 );
-                if (response.data.success && response.data.occupants) {
+                if (response.data.success && response.data.occupant) {
                     setHasOccupants(true);
                     setOccupantsData(response.data.occupants);
+                    console.log("Occupants data:", response.data.occupant);
                 }
             } catch (error) {
                 console.error("Error fetching occupants:", error);

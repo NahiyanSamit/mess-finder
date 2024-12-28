@@ -23,15 +23,15 @@ router.post("/add", async (req, res) => {
 });
 
 // Get occupants by manager email
-router.get("/user/:email", async (req, res) => {
+router.get("/room/:email", async (req, res) => {
     const { email } = req.params;
 
     try {
-        const occupants = await Occupant.find({ managerEmail: email });
-        if (occupants) {
-            res.status(200).json({ success: true, occupants });
+        const occupant = await Occupant.find({ managerEmail: email });
+        if (occupant) {
+            res.status(200).json({ success: true, occupant });
         } else {
-            res.status(200).json({ success: true, occupants: [] });
+            res.status(200).json({ success: true, occupant: [] });
         }
     } catch (error) {
         res.status(500).json({ message: "Error fetching occupants", error });
