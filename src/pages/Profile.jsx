@@ -5,6 +5,7 @@ import districts from "../components/districts.json";
 import upazilas from "../components/upazilas.json";
 import { MessDetails } from "../components/MessDetails";
 import { AddPerson } from "../components/addPerson";
+import CreateVacancyModal from "../components/CreateVacancyModal";
 import { Link } from "react-router-dom";
 import API from "../api/api";
 
@@ -19,6 +20,8 @@ export function Profile() {
     const [occupantsData, setOccupantsData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState(null); // State to store the selected room
+    const [showVacancyModal, setShowVacancyModal] = useState(false);
+    const [vacancyRoomDetails, setVacancyRoomDetails] = useState(null);
 
     // Retrieve user data from location state
     const { username, email, userType } = location.state || {};
@@ -110,6 +113,13 @@ export function Profile() {
         room.people.push(personData); // Add the new person to the room
         setMessData({ ...messData }); // Update the mess data in state
         setSelectedRoom(null); // Close the form after adding the person
+    };
+    const toggleVacancyModal = (roomNo) => () => {
+        const totalSeats = occupantsData.filter(
+            (occupant) => occupant.roomNo === roomNo
+        ).length;
+        setVacancyRoomDetails(totalSeats);
+        setShowVacancyModal((prev) => !prev);
     };
 
     return (
@@ -236,6 +246,16 @@ export function Profile() {
                                                                     Name:
                                                                 </strong>{" "}
                                                                 {occupant.name}{" "}
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={toggleVacancyModal(
+                                                                        occupant.roomNo
+                                                                    )}
+                                                                    className="bg-orange-500 text-white rounded hover:bg-orange-600"
+                                                                >
+                                                                    Create
+                                                                    Vacancy
+                                                                </button>
                                                                 <br />
                                                                 <strong>
                                                                     Age:
@@ -260,6 +280,21 @@ export function Profile() {
                             </ul>
                         </div>
                     </div>
+                )}
+            </div>
+            <div>
+                {/* Existing Profile Content */}
+                {showVacancyModal && (
+                    <CreateVacancyModal
+                        messName={messData.messName}
+                        messType={messData.messType}
+                        address={messData.address}
+                        upazila={messData.upazila}
+                        district={messData.district}
+                        messManagerEmail={emailFromStorage}
+                        totalOccupants={vacancyRoomDetails}
+                        onClose={toggleVacancyModal()}
+                    />
                 )}
             </div>
             {selectedRoom && (
