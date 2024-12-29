@@ -33,9 +33,9 @@ const MessDetails = ({ closeModal }) => {
         setRooms([...rooms, { id: rooms.length + 1, people: [] }]);
     };
 
-    const openPersonDetailsForm = (roomId) => {
-        setSelectedRoom(roomId);
-    };
+    // const openPersonDetailsForm = (roomId) => {
+    //     setSelectedRoom(roomId);
+    // };
 
     const addPersonToRoom = (personDetails) => {
         setRooms((prevRooms) =>

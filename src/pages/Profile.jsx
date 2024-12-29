@@ -69,7 +69,7 @@ export function Profile() {
                 );
                 if (response.data.success && response.data.occupant) {
                     setHasOccupants(true);
-                    setOccupantsData(response.data.occupants);
+                    setOccupantsData(response.data.occupant);
                     console.log("Occupants data:", response.data.occupant);
                 }
             } catch (error) {
@@ -177,7 +177,9 @@ export function Profile() {
                         </p>
                         <p className="text-gray-600">
                             <strong className="text-gray-800">Location:</strong>{" "}
-                            {messData.address}, {getUpazilaName(messData.upazila)}, {getDistrictName(messData.district)}
+                            {messData.address},{" "}
+                            {getUpazilaName(messData.upazila)},{" "}
+                            {getDistrictName(messData.district)}
                         </p>
 
                         <p className="text-gray-600">
@@ -186,36 +188,77 @@ export function Profile() {
                             </strong>{" "}
                             {messData.messType}
                         </p>
-                        <p className="text-gray-600">
+                        <div className="text-gray-600">
                             <strong className="text-gray-800">Rooms:</strong>
                             <ul className="mt-2">
-                                {Array.from({ length: messData.totalRooms }, (_, index) => (
-                                    <li
-                                        key={index}
-                                        className="flex justify-between items-center bg-gray-50 p-2 rounded mb-2"
-                                    >
-                                        <span>
-                                            <strong>Room {index + 1}:</strong> Details not available
-                                        </span>
-                                        <button
-                                            type="button"
-                                            onClick={() => openPersonDetailsForm(index + 1)}
-                                            className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+                                {Array.from(
+                                    { length: messData.totalRooms },
+                                    (_, index) => (
+                                        <li
+                                            key={index}
+                                            className="flex flex-col bg-gray-50 p-2 rounded mb-2"
                                         >
-                                            Add Person
-                                        </button>
-                                        <ul>
-                                            {messData.rooms &&
-                                                messData.rooms[index]?.people?.map((person, pIndex) => (
-                                                    <li key={pIndex}>
-                                                        {person.name} - {person.age} - {person.phone}
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span>
+                                                    <strong>
+                                                        Room {index + 1}:
+                                                    </strong>{" "}
+                                                    Details not available
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        openPersonDetailsForm(
+                                                            index + 1
+                                                        )
+                                                    }
+                                                    className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+                                                >
+                                                    Add Person
+                                                </button>
+                                            </div>
+                                            <ul className="pl-4 list-disc">
+                                                {occupantsData?.length > 0 ? (
+                                                    occupantsData
+                                                        .filter(
+                                                            (occupant) =>
+                                                                occupant.roomNo ===
+                                                                index + 1
+                                                        )
+                                                        .map((occupant) => (
+                                                            <li
+                                                                key={
+                                                                    occupant._id
+                                                                }
+                                                                className="mb-1"
+                                                            >
+                                                                <strong>
+                                                                    Name:
+                                                                </strong>{" "}
+                                                                {occupant.name}{" "}
+                                                                <br />
+                                                                <strong>
+                                                                    Age:
+                                                                </strong>{" "}
+                                                                {occupant.age}{" "}
+                                                                <br />
+                                                                <strong>
+                                                                    Phone:
+                                                                </strong>{" "}
+                                                                {occupant.phone}
+                                                            </li>
+                                                        ))
+                                                ) : (
+                                                    <li>
+                                                        No occupants available
                                                     </li>
-                                                ))}
-                                        </ul>
-                                    </li>
-                                ))}
+                                                )}
+                                            </ul>
+                                        </li>
+                                    )
+                                )}
                             </ul>
-                        </p>
+                        </div>
                     </div>
                 )}
             </div>
