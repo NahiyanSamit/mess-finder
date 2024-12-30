@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import districts from "../components/districts.json";
 import upazilas from "../components/upazilas.json";
 import { MessDetails } from "../components/MessDetails";
+import { VacancyDetails } from "../components/VacancyDetails";
 import { AddPerson } from "../components/addPerson";
 import CreateVacancyModal from "../components/CreateVacancyModal";
 import { Link } from "react-router-dom";
@@ -14,6 +15,7 @@ export function Profile() {
     const location = useLocation();
 
     const [showMessDetails, setMessDetails] = useState(false);
+    const [showVacancyDetails, setVacancyDetails] = useState(false);
     const [hasMess, setHasMess] = useState(false);
     const [messData, setMessData] = useState(null); // State to store mess data
     const [hasOccupants, setHasOccupants] = useState(false);
@@ -91,6 +93,8 @@ export function Profile() {
         navigate("/");
     };
 
+    const addVacancyDetails = () => setVacancyDetails(!showVacancyDetails);
+
     const addMessDetails = () => setMessDetails(!showMessDetails);
 
     const addPersonToRoom = (personData) => {
@@ -161,17 +165,20 @@ export function Profile() {
                 </div>
                 {userTypeFromStorage === "messManager" && (
                     <div className="flex justify-center mt-4">
-                        {!loading && (
+                        {!loading && !hasMess && (
                             <button
                                 onClick={addMessDetails}
-                                className={`add-mess-button py-2 px-4 rounded ${
-                                    hasMess
-                                        ? "bg-gray-400 text-white cursor-not-allowed"
-                                        : "bg-blue-500 text-white hover:bg-blue-600"
-                                }`}
-                                disabled={hasMess}
+                                className="py-2 px-4 rounded bg-blue-500 text-white hover:bg-blue-600"
                             >
-                                {hasMess ? "Mess Already Added" : "Add Mess"}
+                                Add Mess
+                            </button>
+                        )}
+                        {!loading && !hasMess && (
+                            <button
+                                onClick={addVacancyDetails}
+                                className="py-2 px-4 ml-1 rounded bg-blue-500 text-white hover:bg-blue-600"
+                            >
+                                Add Vacancy
                             </button>
                         )}
                     </div>
@@ -306,6 +313,7 @@ export function Profile() {
             )}
             {/* Toggle modal */}
             {showMessDetails && <MessDetails closeModal={addMessDetails} />}
+            {showVacancyDetails && <VacancyDetails closeModal={addVacancyDetails} />}
         </div>
     );
 }
