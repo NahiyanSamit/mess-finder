@@ -38,4 +38,16 @@ router.get("/room/:email", async (req, res) => {
     }
 });
 
+// Delete occupant by id
+router.delete("/delete/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await Occupant.findByIdAndDelete(id);
+        res.status(200).json({ message: "Occupant deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting occupant", error });
+    }
+});
+
 module.exports = router;

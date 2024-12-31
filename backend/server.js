@@ -6,6 +6,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const messRoutes = require("./routes/messroute");
 const occupantRoutes = require("./routes/occupantroute");
+const vacancyRoutes = require("./routes/vacancyroute");
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ const connectDB = async () => {
 app.use("/api/auth", authRoutes);
 app.use("/api/messroute", messRoutes);
 app.use("/api/occupantroute", occupantRoutes);
+app.use("/api/vacancyroute", vacancyRoutes);
 
 // 404 Error Handling
 app.use((req, res, next) => {

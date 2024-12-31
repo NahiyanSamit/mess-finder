@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import API from "../api/api";
 
 export function CreateVacancyModal({
+    occupant_id,
     messName,
     messType,
     address,
@@ -16,37 +18,41 @@ export function CreateVacancyModal({
     const [price, setPrice] = useState(0);
 
     // handleSubmit function only runs once after form submission
-    const handleSubmit = () => {
-        const vacancyData = {
-            messName,
-            messType,
-            address,
-            upazila,
-            district,
-            totalOccupants,
-            messManagerEmail,
-            price,
-        };
+    const handleSubmit = async () => {
+        try {
+            const response = await API.post("http://localhost:5000/api/vacancyroute/add", {
+                messName,
+                messType,
+                address,
+                upazila,
+                district,
+                totalOccupants,
+                messManagerEmail,
+                price,
+            });
+            if (response.status === 201) {
+                alert("Vacancy added successfully");
+            }
+        } catch (error) {
+            alert("Error saving vacancy");
+        }
+        // console.log(vacancyData);
 
-        onCreateVacancy(vacancyData); // Call to create vacancy
+        onCreateVacancy(); // Call to create vacancy
         onClose(); // Close modal only after submission
     };
 
     // handleDelete function to delete the vacancy
     const handleDelete = () => {
-        const vacancyData = {
-            messName,
-            messType,
-            address,
-            upazila,
-            district,
-            totalOccupants,
-            messManagerEmail,
-            price,
-        };
-
-        onDelete(vacancyData); // Call to delete vacancy
-        onClose(); // Close modal after deleting
+        // delete occupant from the database using the occupant_id
+        try {
+            API.delete(`http://localhost:5000/api/occupantroute/delete/${occupant_id}`);
+            alert("Seat deleted successfully");
+            onDelete(); // Call to delete vacancy
+            onClose(); // Close modal after deleting
+        } catch (error) {
+            alert("Error deleting seat");
+        }
     };
 
     return (
@@ -69,7 +75,7 @@ export function CreateVacancyModal({
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 font-medium mb-2" htmlFor="price">
-                        Price per Occupant:
+                        Price per Seat:
                     </label>
                     <input
                         type="number"
@@ -97,7 +103,7 @@ export function CreateVacancyModal({
                         onClick={handleDelete} // Delete and close modal after deletion
                         className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
                     >
-                        Delete Vacancy
+                        Delete Seat
                     </button>
                 </div>
             </div>
@@ -106,6 +112,7 @@ export function CreateVacancyModal({
 }
 
 CreateVacancyModal.propTypes = {
+    occupant_id: PropTypes.string.isRequired,
     messName: PropTypes.string.isRequired,
     messType: PropTypes.string.isRequired,
     address: PropTypes.string.isRequired,

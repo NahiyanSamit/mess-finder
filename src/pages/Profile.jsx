@@ -24,6 +24,7 @@ export function Profile() {
     const [selectedRoom, setSelectedRoom] = useState(null); // State to store the selected room
     const [showVacancyModal, setShowVacancyModal] = useState(false);
     const [vacancyRoomDetails, setVacancyRoomDetails] = useState(null);
+    const [occupantId, setOccupantId] = useState(null);
 
     // Retrieve user data from location state
     const { username, email, userType } = location.state || {};
@@ -118,10 +119,11 @@ export function Profile() {
         setMessData({ ...messData }); // Update the mess data in state
         setSelectedRoom(null); // Close the form after adding the person
     };
-    const toggleVacancyModal = (roomNo) => () => {
+    const toggleVacancyModal = (roomNo, _id) => () => {
         const totalSeats = occupantsData.filter(
             (occupant) => occupant.roomNo === roomNo
         ).length;
+        setOccupantId(_id);
         setVacancyRoomDetails(totalSeats);
         setShowVacancyModal((prev) => !prev);
     };
@@ -256,7 +258,8 @@ export function Profile() {
                                                                 <button
                                                                     type="button"
                                                                     onClick={toggleVacancyModal(
-                                                                        occupant.roomNo
+                                                                        occupant.roomNo,
+                                                                        occupant._id
                                                                     )}
                                                                     className="bg-orange-500 text-white rounded hover:bg-orange-600"
                                                                 >
@@ -299,8 +302,10 @@ export function Profile() {
                         upazila={messData.upazila}
                         district={messData.district}
                         messManagerEmail={emailFromStorage}
+                        occupant_id={occupantId}
                         totalOccupants={vacancyRoomDetails}
                         onClose={toggleVacancyModal()}
+                        onCreateVacancy={() => {}}
                     />
                 )}
             </div>

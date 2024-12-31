@@ -11,12 +11,12 @@ const VacancyDetails = ({ closeModal }) => {
     const [selectedDistrict, setSelectedDistrict] = useState("");
     const [selectedUpazila, setSelectedUpazila] = useState("");
     const [filteredUpazilas, setFilteredUpazilas] = useState([]);
-    const [roomOccupant, setRoomOccupant] = useState("");
+    const [totalOccupants, settotalOccupants] = useState("");
     const [price, setPrice] = useState("");
 
     const location = useLocation();
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    const email = location.state?.email || storedUser?.email;
+    const messManagerEmail = location.state?.email || storedUser?.email;
 
     useEffect(() => {
         if (selectedDistrict) {
@@ -30,18 +30,28 @@ const VacancyDetails = ({ closeModal }) => {
     }, [selectedDistrict]);
 
     const handleSubmit = () => {
-        const data = {
+        const vacancyData = {
             messName,
-            address,
             messType,
-            district: selectedDistrict,
+            address,
             upazila: selectedUpazila,
-            roomOccupant,
+            district: selectedDistrict,
+            totalOccupants,
+            messManagerEmail,
             price,
-            email,
         };
 
-        console.log(data);
+        try {
+            API.post("http://localhost:5000/api/vacancyroute/add", vacancyData).then((response) => {
+                if (response.status === 201) {
+                    alert("Vacancy added successfully");
+                    closeModal();
+                }
+            });
+        } catch (error) {
+            alert("Error saving vacancy");
+        }
+
     }
 
     return (
@@ -136,14 +146,14 @@ const VacancyDetails = ({ closeModal }) => {
                     </div>
                     {/* div for total room occupants in number */}
                     <div className="mb-4">
-                        <label htmlFor="roomOccupant" className="block text-sm font-medium">
+                        <label htmlFor="totalOccupants" className="block text-sm font-medium">
                             Room Occupant
                         </label>
                         <input
-                            id="roomOccupant"
+                            id="totalOccupants"
                             type="number"
-                            value={roomOccupant}
-                            onChange={(e) => setRoomOccupant(e.target.value)}
+                            value={totalOccupants}
+                            onChange={(e) => settotalOccupants(e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md"
                             placeholder="Enter total room occupants"
                             required
