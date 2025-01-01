@@ -1,27 +1,68 @@
 import Dropdown from "../components/Dropdown";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import React from "react";
+import React, { useState } from "react";
+import districts from "../components/districts.json";
+import upazilas from "../components/upazilas.json";
 
 function Search() {
     const location = useLocation();
     const navigate = useNavigate();
-    const searchResults = location.state?.results || []; // Retrieve passed state
+    const searchResults = location.state?.vacancies || []; // Retrieve passed vacancies
 
+    // State for filters
+    const [selectedGender, setSelectedGender] = useState("");
+    const [selectedRoomType, setSelectedRoomType] = useState("");
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
 
+    // Filter search results based on user input
     const filterSearch = () => {
-        // Implement search filtering logic here
+        const filteredResults = searchResults.filter((mess) => {
+            const matchesGender = selectedGender
+                ? mess.gender === selectedGender
+                : true;
+            const matchesRoomType = selectedRoomType
+                ? mess.roomType === selectedRoomType
+                : true;
+            const matchesPrice =
+                (minPrice ? mess.price >= parseFloat(minPrice) : true) &&
+                (maxPrice ? mess.price <= parseFloat(maxPrice) : true);
+
+            return matchesGender && matchesRoomType && matchesPrice;
+        });
+
+        return filteredResults;
     };
 
     const messDetails = (mess) => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
         if (storedUser) {
-            navigate(`/Mess/${mess.id}`, { state: { mess } });
-        }
-        else {
+            navigate(`/Mess/${mess._id}`, { state: { mess } });
+        } else {
             alert("Please login to view mess details");
         }
     };
+
+    const getMessLocation = (mess) => {
+        return `${mess.address}, ${getUpazilaName(
+            mess.upazila
+        )}, ${getDistrictName(mess.district)}`;
+    };
+
+    const getDistrictName = (districtId) => {
+        const district = districts.find((d) => d.id === districtId);
+        return district ? district.name : "Unknown District";
+    };
+    const getUpazilaName = (upazilaId) => {
+        const upazila = upazilas.find((u) => u.id === upazilaId);
+        return upazila ? upazila.name : "Unknown Upazila";
+    };
+    const getRoomType = (totalOccupants) => {
+        return totalOccupants === 1 ? "Single" : "Shared";
+    };
+
+    const filteredResults = filterSearch();
 
     return (
         <div className="App">
@@ -32,6 +73,7 @@ function Search() {
             <div className="mt-20">
                 <Dropdown />
             </div>
+
             <div className="flex flex-wrap gap-4 justify-center">
                 {/* Parent container for the filter and results */}
                 <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-6">
@@ -40,7 +82,8 @@ function Search() {
                         <h3 className="text-lg font-bold mb-4">
                             Filter Options
                         </h3>
-                        {/* gender select option */}
+
+                        {/* Gender select option */}
                         <div className="mb-4">
                             <label
                                 htmlFor="gender"
@@ -50,10 +93,10 @@ function Search() {
                             </label>
                             <select
                                 id="gender"
-                                // value={selectedGender}
-                                // onChange={(e) =>
-                                //     setSelectedGender(e.target.value)
-                                // }
+                                value={selectedGender}
+                                onChange={(e) =>
+                                    setSelectedGender(e.target.value)
+                                }
                                 className="w-full py-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">-- Select Gender --</option>
@@ -61,28 +104,30 @@ function Search() {
                                 <option value="female">Female</option>
                             </select>
                         </div>
-                        {/* mess type select option */}
+
+                        {/* Room type select option */}
                         <div className="mb-4">
                             <label
-                                htmlFor="messType"
+                                htmlFor="roomType"
                                 className="block text-gray-600 mb-2"
                             >
                                 Select Room Type:
                             </label>
                             <select
-                                id="gender"
-                                // value={selectedGender}
-                                // onChange={(e) =>
-                                //     setSelectedGender(e.target.value)
-                                // }
+                                id="roomType"
+                                value={selectedRoomType}
+                                onChange={(e) =>
+                                    setSelectedRoomType(e.target.value)
+                                }
                                 className="w-full py-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">-- Select Room Type --</option>
-                                <option value="male">Single</option>
-                                <option value="female">Shared</option>
+                                <option value="single">Single</option>
+                                <option value="shared">Shared</option>
                             </select>
                         </div>
-                        {/* Seat price range */}
+
+                        {/* Price range inputs */}
                         <div className="mb-4">
                             <label
                                 htmlFor="price"
@@ -93,14 +138,19 @@ function Search() {
                             <input
                                 type="number"
                                 placeholder="Min Price"
+                                value={minPrice}
+                                onChange={(e) => setMinPrice(e.target.value)}
                                 className="w-full py-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <input
                                 type="number"
                                 placeholder="Max Price"
+                                value={maxPrice}
+                                onChange={(e) => setMaxPrice(e.target.value)}
                                 className="w-full py-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
                             />
                         </div>
+
                         <button
                             type="button"
                             onClick={filterSearch}
@@ -112,31 +162,47 @@ function Search() {
 
                     {/* Right Search Results Section */}
                     <div className="p-4">
-                        {searchResults.length > 0 ? (
+                        {filteredResults.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-                                {searchResults.map((mess) => (
+                                {filteredResults.map((mess) => (
                                     <div
-                                        key={mess.id}
+                                        key={mess._id}
                                         className="p-4 border rounded-lg shadow-md"
                                     >
                                         <h2 className="text-xl font-bold mb-2">
-                                            {mess.name}
+                                            {mess.messName}
                                         </h2>
                                         <p className="text-gray-700">
-                                            {mess.location}
+                                            <span className="underline">
+                                                Address:
+                                            </span>{" "}
+                                            {getMessLocation(mess)}
                                         </p>
                                         <p className="text-gray-600 mt-2">
-                                            {mess.details}
+                                            <span className="underline">
+                                                Price:
+                                            </span>{" "}
+                                            {mess.price}
                                         </p>
+                                        <p className="text-gray-600 mt-2">
+                                            <span className="underline">
+                                                Mess Type:
+                                            </span>{" "}
+                                            {mess.messType}
+                                        </p>
+                                        <p className="text-gray-600 mt-2">
+                                            <span className="underline">
+                                                Room Type:
+                                            </span>{" "}
+                                            {getRoomType(mess.totalOccupants)}
+                                        </p>
+
                                         <div className="flex justify-between items-center mt-4">
-                                            <p className="text-blue-500 font-bold">
-                                                {mess.price}
-                                            </p>
                                             <button
                                                 className="text-white bg-blue-500 px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                                                 onClick={() =>
                                                     messDetails(mess)
-                                                } // Correct invocation
+                                                }
                                             >
                                                 View Details
                                             </button>

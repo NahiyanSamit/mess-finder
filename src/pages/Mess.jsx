@@ -5,10 +5,10 @@ import Header from "../components/Header";
 function Mess() {
     const { state } = useLocation();
     const navigate = useNavigate();
-    const mess = state?.mess; // Retrieve the mess details from the passed state
+    const vacancies = state?.vacancies || [];
 
     // If no mess data is available, display a message
-    if (!mess) {
+    if (!vacancies.length) {
         return (
             <div className="text-center mt-10">
                 <p className="text-gray-500 text-xl">
@@ -29,15 +29,15 @@ function Mess() {
             < Header />
             <div className="max-w-4xl mx-auto mt-32 p-6 bg-white rounded-lg shadow-lg">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                    {mess.name}
+                    {vacancies.messName}
                 </h1>
                 <p className="text-lg text-gray-700 mb-2">
                     <span className="font-semibold">Location:</span>{" "}
-                    {mess.district}, {mess.upazila}
+                    {vacancies.district}, {vacancies.upazila}
                 </p>
                 <p className="text-lg text-gray-700 mb-4">
                     <span className="font-semibold">Details:</span>{" "}
-                    {mess.details}
+                    {vacancies.messType}
                 </p>
                 <button
                     onClick={() => navigate(-1)} // Navigate back to the previous page

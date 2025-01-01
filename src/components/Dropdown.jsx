@@ -2,90 +2,7 @@ import React, { useState, useEffect } from "react";
 import districts from "./districts.json";
 import upazilas from "./upazilas.json";
 import { useNavigate } from "react-router-dom";
-
-const mockMessData = [
-    {
-        id: 1,
-        name: "Mess A",
-        district: "Comilla",
-        dist_id: "1",
-        upazila: "Barura",
-        upazila_id: "2",
-        details: "lorem ipsum dolor sit amet",
-    },
-    {
-        id: 2,
-        name: "Mess B",
-        district: "Comilla",
-        dist_id: "1",
-        upazila: "Upazila 2",
-        upazila_id: "2",
-        details: "lorem ipsum dolor sit amet",
-    },
-    {
-        id: 3,
-        name: "Mess A",
-        district: "Comilla",
-        dist_id: "1",
-        upazila: "Barura",
-        upazila_id: "2",
-        details: "lorem ipsum dolor sit amet",
-    },
-    {
-        id: 4,
-        name: "Mess B",
-        district: "Comilla",
-        dist_id: "1",
-        upazila: "Upazila 2",
-        upazila_id: "2",
-        details: "lorem ipsum dolor sit amet",
-    },
-    {
-        id: 5,
-        name: "Mess A",
-        district: "Comilla",
-        dist_id: "1",
-        upazila: "Barura",
-        upazila_id: "2",
-        details: "lorem ipsum dolor sit amet",
-    },
-    {
-        id: 6,
-        name: "Mess B",
-        district: "Comilla",
-        dist_id: "1",
-        upazila: "Upazila 2",
-        upazila_id: "2",
-        details: "lorem ipsum dolor sit amet",
-    },
-    {
-        id: 7,
-        name: "Mess A",
-        district: "Comilla",
-        dist_id: "1",
-        upazila: "Barura",
-        upazila_id: "2",
-        details: "lorem ipsum dolor sit amet",
-    },
-    {
-        id: 8,
-        name: "Mess B",
-        district: "Comilla",
-        dist_id: "1",
-        upazila: "Upazila 2",
-        upazila_id: "2",
-        details: "lorem ipsum dolor sit amet",
-    },
-    {
-        id: 9,
-        name: "Mess C",
-        district: "Comilla",
-        dist_id: "1",
-        upazila: "Chandina",
-        upazila_id: "4",
-        details: "lorem ipsum dolor sit amet",
-    },
-];
+import API from "../api/api";
 
 const Dropdown = () => {
     const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -94,27 +11,16 @@ const Dropdown = () => {
     const navigate = useNavigate();
 
     const handleSearch = () => {
-        let filteredResults = mockMessData.filter((mess) => {
-            // Compare district_id and upazila_id with selected values
-            const districtMatch = mess.dist_id === selectedDistrict;
-            const upazilaMatch = mess.upazila_id === selectedUpazila;
-            
-            return districtMatch && upazilaMatch;
+        // get vacancy data from database
+        API.get(
+            `http://localhost:5000/api/vacancyroute/get/${selectedDistrict}/${selectedUpazila}`
+        ).then((response) => {
+            if (response.status === 200) {
+                navigate("/search", { state: { vacancies: response.data } });
+                console.log(response.data);
+            }
         });
-        
-        if (filteredResults.length === 0) {
-            console.log("Selected District:", selectedDistrict);
-            console.log("Selected Upazila:", selectedUpazila);
-            console.log("Filtered Results:", filteredResults);
-            // Clear the filteredResults array
-            filteredResults = [];
-            navigate("/search", { state: { results: filteredResults } });
-        } else {
-            navigate("/search", { state: { results: filteredResults } });
-        }
-        
     };
-    
 
     useEffect(() => {
         if (selectedDistrict) {
@@ -169,6 +75,7 @@ const Dropdown = () => {
             <button
                 type="button"
                 onClick={handleSearch}
+                disabled={!selectedDistrict || !selectedUpazila} // Disable if either is not selected
                 className="py-1.5 px-4 transition-colors bg-gray-50 border active:bg-gray-200 font-medium border-gray-200 text-gray-900 rounded-lg hover:bg-gray-100 disabled:opacity-50"
             >
                 <svg
@@ -179,7 +86,7 @@ const Dropdown = () => {
                     height="24"
                 >
                     <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M14.53 15.59a8.25 8.25 0 111.06-1.06l5.69 5.69a.75.75 0 11-1.06 1.06l-5.69-5.69zM2.5 9.25a6.75 6.75 0 1111.74 4.547.746.746 0 00-.443.442A6.75 6.75 0 012.5 9.25z"
                     ></path>
                 </svg>

@@ -25,4 +25,16 @@ router.post("/add", async (req, res) => {
     }
 });
 
+// Get vacancy details
+router.get("/get/:district/:upazila", async (req, res) => {
+    const { district, upazila } = req.params;
+
+    try {
+        const vacancies = await Vacancy.find({ district, upazila });
+        res.status(200).json(vacancies);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching vacancies", error });
+    }
+});
+
 module.exports = router;
