@@ -23,7 +23,7 @@ function Search() {
                 ? mess.gender === selectedGender
                 : true;
             const matchesRoomType = selectedRoomType
-                ? mess.roomType === selectedRoomType
+                ? getRoomType(mess.totalOccupants) === selectedRoomType
                 : true;
             const matchesPrice =
                 (minPrice ? mess.price >= parseFloat(minPrice) : true) &&
@@ -39,6 +39,7 @@ function Search() {
         const storedUser = JSON.parse(localStorage.getItem("user"));
         if (storedUser) {
             navigate(`/Mess/${mess._id}`, { state: { mess } });
+            console.log(mess);
         } else {
             alert("Please login to view mess details");
         }
@@ -122,8 +123,8 @@ function Search() {
                                 className="w-full py-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">-- Select Room Type --</option>
-                                <option value="single">Single</option>
-                                <option value="shared">Shared</option>
+                                <option value="Single">Single</option>
+                                <option value="Shared">Shared</option>
                             </select>
                         </div>
 

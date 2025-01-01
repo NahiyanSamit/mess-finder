@@ -18,7 +18,6 @@ export function Profile() {
     const [showVacancyDetails, setVacancyDetails] = useState(false);
     const [hasMess, setHasMess] = useState(false);
     const [messData, setMessData] = useState(null); // State to store mess data
-    const [hasOccupants, setHasOccupants] = useState(false);
     const [occupantsData, setOccupantsData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState(null); // State to store the selected room
@@ -74,7 +73,6 @@ export function Profile() {
                     `http://localhost:5000/api/occupantroute/room/${emailFromStorage}`
                 );
                 if (response.data.success && response.data.occupant) {
-                    setHasOccupants(true);
                     setOccupantsData(response.data.occupant);
                     console.log("Occupants data:", response.data.occupant);
                 }
