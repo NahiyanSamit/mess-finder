@@ -37,4 +37,20 @@ router.get("/get/:district/:upazila", async (req, res) => {
     }
 });
 
+// Find vacancy by manager email
+router.get("/mess/:email", async (req, res) => {
+    const { email } = req.params;
+
+    try {
+        const vacancie = await Vacancy.find({ messManagerEmail: email });
+        if (vacancie) {
+            res.status(200).json({ success: true, vacancie });
+        } else {
+            res.status(200).json({ success: true, vacancie: [] });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching vacancy", error });
+    }
+});
+
 module.exports = router;

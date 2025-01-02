@@ -20,7 +20,7 @@ function Search() {
     const filterSearch = () => {
         const filteredResults = searchResults.filter((mess) => {
             const matchesGender = selectedGender
-                ? mess.gender === selectedGender
+                ? mess.messType === selectedGender
                 : true;
             const matchesRoomType = selectedRoomType
                 ? getRoomType(mess.totalOccupants) === selectedRoomType

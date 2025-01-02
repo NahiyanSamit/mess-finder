@@ -19,6 +19,7 @@ export function Profile() {
     const [hasMess, setHasMess] = useState(false);
     const [messData, setMessData] = useState(null); // State to store mess data
     const [occupantsData, setOccupantsData] = useState(null);
+    const [vacancies, setVacancies] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState(null); // State to store the selected room
     const [showVacancyModal, setShowVacancyModal] = useState(false);
@@ -81,9 +82,29 @@ export function Profile() {
             }
         };
 
+        // Fetch Vacancy data
+        const fetchVacancyData = async () => {
+            try {
+                const response = await API.get(
+                    `http://localhost:5000/api/vacancyroute/mess/${emailFromStorage}`
+                );
+                if (response.data) {
+                    setVacancies(response.data);
+                    console.log("API Response:", response.data);
+                    console.log("Hello");
+                } else {
+                    console.log("API Response:", response.data);
+                    setVacancies(response.data.vacancy);
+                }
+            } catch (error) {
+                console.log("Error fetching vacancies:");
+            }
+        };
+
         if (emailFromStorage) {
             fetchMessData();
             fetchOccupantData();
+            fetchVacancyData();
         }
     }, [emailFromStorage]);
 
@@ -183,112 +204,181 @@ export function Profile() {
                         )}
                     </div>
                 )}
-                {hasMess && messData && (
-                    <div className="mess-details bg-gray-100 p-4 rounded-lg mt-6">
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                            Your Mess Details
-                        </h2>
-                        <p className="text-gray-600">
-                            <strong className="text-gray-800">Name:</strong>{" "}
-                            {messData.messName}
-                        </p>
-                        <p className="text-gray-600">
-                            <strong className="text-gray-800">Location:</strong>{" "}
-                            {messData.address},{" "}
-                            {getUpazilaName(messData.upazila)},{" "}
-                            {getDistrictName(messData.district)}
-                        </p>
-
-                        <p className="text-gray-600">
-                            <strong className="text-gray-800">
-                                Mess Type:
-                            </strong>{" "}
-                            {messData.messType}
-                        </p>
-                        <div className="text-gray-600">
-                            <strong className="text-gray-800">Rooms:</strong>
-                            <ul className="mt-2">
-                                {Array.from(
-                                    { length: messData.totalRooms },
-                                    (_, index) => (
-                                        <li
-                                            key={index}
-                                            className="flex flex-col bg-gray-50 p-2 rounded mb-2"
-                                        >
-                                            <div className="flex justify-between items-center mb-2">
-                                                <span>
-                                                    <strong>
-                                                        Room {index + 1}:
-                                                    </strong>{" "}
-                                                    Details not available
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        openPersonDetailsForm(
-                                                            index + 1
-                                                        )
-                                                    }
-                                                    className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
-                                                >
-                                                    Add Person
-                                                </button>
-                                            </div>
-                                            <ul className="pl-4 list-disc">
-                                                {occupantsData?.length > 0 ? (
-                                                    occupantsData
-                                                        .filter(
-                                                            (occupant) =>
-                                                                occupant.roomNo ===
+                <div className="details-container flex flex-col md:flex-row gap-6">
+                    {messData && (
+                        <div className="mess-details bg-gray-100 p-4 rounded-lg mt-6">
+                            <h2 className="text-xl font-semibold text-gray-700 mb-4">
+                                Your Mess Details
+                            </h2>
+                            <p className="text-gray-600">
+                                <strong className="text-gray-800">Name:</strong>{" "}
+                                {messData.messName}
+                            </p>
+                            <p className="text-gray-600">
+                                <strong className="text-gray-800">
+                                    Location:
+                                </strong>{" "}
+                                {messData.address},{" "}
+                                {getUpazilaName(messData.upazila)},{" "}
+                                {getDistrictName(messData.district)}
+                            </p>
+                            <p className="text-gray-600">
+                                <strong className="text-gray-800">
+                                    Mess Type:
+                                </strong>{" "}
+                                {messData.messType}
+                            </p>
+                            <div className="text-gray-600">
+                                <strong className="text-gray-800">
+                                    Rooms:
+                                </strong>
+                                <ul className="mt-2">
+                                    {Array.from(
+                                        { length: messData.totalRooms },
+                                        (_, index) => (
+                                            <li
+                                                key={index}
+                                                className="flex flex-col bg-gray-50 p-2 rounded mb-2"
+                                            >
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span>
+                                                        <strong>
+                                                            Room {index + 1}:
+                                                        </strong>{" "}
+                                                        Details not available
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            openPersonDetailsForm(
                                                                 index + 1
-                                                        )
-                                                        .map((occupant) => (
-                                                            <li
-                                                                key={
-                                                                    occupant._id
-                                                                }
-                                                                className="mb-1"
-                                                            >
-                                                                <strong>
-                                                                    Name:
-                                                                </strong>{" "}
-                                                                {occupant.name}{" "}
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={toggleVacancyModal(
-                                                                        occupant.roomNo,
+                                                            )
+                                                        }
+                                                        className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+                                                    >
+                                                        Add Person
+                                                    </button>
+                                                </div>
+                                                <ul className="pl-4 list-disc">
+                                                    {occupantsData?.length >
+                                                    0 ? (
+                                                        occupantsData
+                                                            .filter(
+                                                                (occupant) =>
+                                                                    occupant.roomNo ===
+                                                                    index + 1
+                                                            )
+                                                            .map((occupant) => (
+                                                                <li
+                                                                    key={
                                                                         occupant._id
-                                                                    )}
-                                                                    className="bg-orange-500 text-white rounded hover:bg-orange-600"
+                                                                    }
+                                                                    className="mb-1"
                                                                 >
-                                                                    Create
-                                                                    Vacancy
-                                                                </button>
-                                                                <br />
-                                                                <strong>
-                                                                    Age:
-                                                                </strong>{" "}
-                                                                {occupant.age}{" "}
-                                                                <br />
-                                                                <strong>
-                                                                    Phone:
-                                                                </strong>{" "}
-                                                                {occupant.phone}
-                                                            </li>
-                                                        ))
-                                                ) : (
-                                                    <li>
-                                                        No occupants available
-                                                    </li>
-                                                )}
-                                            </ul>
-                                        </li>
-                                    )
-                                )}
-                            </ul>
+                                                                    <strong>
+                                                                        Name:
+                                                                    </strong>{" "}
+                                                                    {
+                                                                        occupant.name
+                                                                    }{" "}
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={toggleVacancyModal(
+                                                                            occupant.roomNo,
+                                                                            occupant._id
+                                                                        )}
+                                                                        className="bg-orange-500 text-white rounded hover:bg-orange-600"
+                                                                    >
+                                                                        Create
+                                                                        Vacancy
+                                                                    </button>
+                                                                    <br />
+                                                                    <strong>
+                                                                        Age:
+                                                                    </strong>{" "}
+                                                                    {
+                                                                        occupant.age
+                                                                    }{" "}
+                                                                    <br />
+                                                                    <strong>
+                                                                        Phone:
+                                                                    </strong>{" "}
+                                                                    {
+                                                                        occupant.phone
+                                                                    }
+                                                                </li>
+                                                            ))
+                                                    ) : (
+                                                        <li>
+                                                            No occupants
+                                                            available
+                                                        </li>
+                                                    )}
+                                                </ul>
+                                            </li>
+                                        )
+                                    )}
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                    {/* show all vacancy listed by the profile */}
+                    {vacancies && (
+                        <div className="vacancy-details bg-gray-100 p-4 rounded-lg mt-6">
+                            <h2 className="text-xl font-semibold text-gray-700 mb-4">
+                                Your Vacancy Details
+                            </h2>
+                            {vacancies.map((vacancy, index) => (
+                                <div
+                                    key={vacancy._id}
+                                    className="flex flex-col bg-gray-50 p-2 rounded mb-2"
+                                >
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span>
+                                            <strong>
+                                                Vacancy {index + 1}:
+                                            </strong>{" "}
+                                            {vacancy.messName}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                console.log("Delete vacancy");
+                                            }}
+                                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                    <ul className="pl-4 list-disc">
+                                        <li className="mb-1">
+                                            <strong>Name:</strong>{" "}
+                                            {vacancy.messName}
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Address:</strong>{" "}
+                                            {vacancy.address},{" "}
+                                            {getUpazilaName(vacancy.upazila)},{" "}
+                                            {getDistrictName(vacancy.district)}
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Type:</strong>{" "}
+                                            {vacancy.messType}
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Price:</strong>{" "}
+                                            {vacancy.price}
+                                        </li>
+                                        <li className="mb-1">
+                                            <strong>Occupants:</strong>{" "}
+                                            {vacancy.totalOccupants}
+                                        </li>
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
             <div>
                 {/* Existing Profile Content */}
@@ -316,7 +406,9 @@ export function Profile() {
             )}
             {/* Toggle modal */}
             {showMessDetails && <MessDetails closeModal={addMessDetails} />}
-            {showVacancyDetails && <VacancyDetails closeModal={addVacancyDetails} />}
+            {showVacancyDetails && (
+                <VacancyDetails closeModal={addVacancyDetails} />
+            )}
         </div>
     );
 }
