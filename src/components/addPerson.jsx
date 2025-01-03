@@ -50,6 +50,7 @@ const AddPerson = ({ roomId, onAddPerson, onCancel }) => {
             console.error("Error adding person:", error);
             alert("An error occurred. Please try again.");
         }
+        window.location.reload();
     };
     
 

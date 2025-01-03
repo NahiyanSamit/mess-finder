@@ -88,13 +88,13 @@ export function Profile() {
                 const response = await API.get(
                     `http://localhost:5000/api/vacancyroute/mess/${emailFromStorage}`
                 );
-                if (response.data) {
-                    setVacancies(response.data);
-                    console.log("API Response:", response.data);
+                if (response.data.success && response.data.vacancie) {
+                    setVacancies(response.data.vacancie);
+                    console.log("API Response:", response.data.vacancie);
                     console.log("Hello");
                 } else {
-                    console.log("API Response:", response.data);
-                    setVacancies(response.data.vacancy);
+                    console.log("API Response:", response.data.vacancie);
+                    setVacancies(response.data.vacancie);
                 }
             } catch (error) {
                 console.log("Error fetching vacancies:");
@@ -375,7 +375,7 @@ export function Profile() {
                                         </li>
                                     </ul>
                                 </div>
-                            ))}
+                            ))} 
                         </div>
                     )}
                 </div>

@@ -92,6 +92,7 @@ const MessDetails = ({ closeModal }) => {
             closeModal();
         }
         closeModal();
+        window.location.reload();
     };
 
     return (

@@ -39,7 +39,16 @@ export function CreateVacancyModal({
         // console.log(vacancyData);
 
         onCreateVacancy(); // Call to create vacancy
+        // Delete the occupant after creating vacancy
+        try {
+            API.delete(`http://localhost:5000/api/occupantroute/delete/${occupant_id}`);
+            alert("Seat deleted successfully");
+        } catch (error) {
+            alert("Error deleting seat");
+        }
         onClose(); // Close modal only after submission
+        // reload the page to see the updated list of occupants
+        window.location.reload();
     };
 
     // handleDelete function to delete the vacancy
@@ -53,6 +62,7 @@ export function CreateVacancyModal({
         } catch (error) {
             alert("Error deleting seat");
         }
+        window.location.reload();
     };
 
     return (
