@@ -152,12 +152,25 @@ function Search() {
                             />
                         </div>
 
-                        <button
+                        {/* <button
                             type="button"
                             onClick={filterSearch}
                             className="w-full py-2 px-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                         >
                             Apply Filters
+                        </button> */}
+                        {/* Clear filter button */}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSelectedGender("");
+                                setSelectedRoomType("");
+                                setMinPrice("");
+                                setMaxPrice("");
+                            }}
+                            className="w-full py-2 px-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors mt-2"
+                        >
+                            Clear Filters
                         </button>
                     </div>
 

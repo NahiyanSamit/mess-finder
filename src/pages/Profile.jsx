@@ -108,6 +108,22 @@ export function Profile() {
         }
     }, [emailFromStorage]);
 
+    const DeleteVacancy = (id) => async () => {
+        try {
+            const response = await API.delete(
+                `http://localhost:5000/api/vacancyroute/delete/${id}`
+            );
+            if (response.data.success) {
+                alert("Vacancy deleted successfully");
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error("Error deleting vacancy:", error);
+            alert("An error occurred. Please try again.");
+        }
+        window.location.reload();
+    };
+
     const handleLogout = () => {
         localStorage.removeItem("user");
         navigate("/");
@@ -342,9 +358,7 @@ export function Profile() {
                                         </span>
                                         <button
                                             type="button"
-                                            onClick={() => {
-                                                console.log("Delete vacancy");
-                                            }}
+                                            onClick={DeleteVacancy(vacancy._id)}
                                             className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
                                         >
                                             Delete

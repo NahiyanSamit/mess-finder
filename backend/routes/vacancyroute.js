@@ -53,4 +53,16 @@ router.get("/mess/:email", async (req, res) => {
     }
 });
 
+// Delete vacancy
+router.delete("/delete/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await Vacancy.findByIdAndDelete(id);
+        res.status(200).json({ message: "Vacancy deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting vacancy", error });
+    }
+});
+
 module.exports = router;
