@@ -8,6 +8,7 @@ import { VacancyDetails } from "../components/VacancyDetails";
 import { AddPerson } from "../components/addPerson";
 import CreateVacancyModal from "../components/CreateVacancyModal";
 import EditProfileModal from "../components/EditProfileModal";
+import EditMessModal from "../components/EditMessModal";
 import { Link } from "react-router-dom";
 import API from "../api/api";
 
@@ -27,6 +28,7 @@ export function Profile() {
     const [vacancyRoomDetails, setVacancyRoomDetails] = useState(null);
     const [occupantId, setOccupantId] = useState(null);
     const [showEditProfile, setShowEditProfile] = useState(false);
+    const [showEditMess, setShowEditMess] = useState(false);
 
     // Retrieve user data from location state
     const { username, email, userType } = location.state || {};
@@ -233,25 +235,29 @@ export function Profile() {
                 <div className="details-container flex flex-col md:flex-row gap-6">
                     {messData && (
                         <div className="mess-details bg-gray-100 p-4 rounded-lg mt-6">
-                            <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                                Your Mess Details
-                            </h2>
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-semibold text-gray-700">
+                                    Your Mess Details
+                                </h2>
+                                <button
+                                    onClick={() => setShowEditMess(true)}
+                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                >
+                                    Edit Mess
+                                </button>
+                            </div>
                             <p className="text-gray-600">
                                 <strong className="text-gray-800">Name:</strong>{" "}
                                 {messData.messName}
                             </p>
                             <p className="text-gray-600">
-                                <strong className="text-gray-800">
-                                    Location:
-                                </strong>{" "}
+                                <strong className="text-gray-800">Location:</strong>{" "}
                                 {messData.address},{" "}
                                 {getUpazilaName(messData.upazila)},{" "}
                                 {getDistrictName(messData.district)}
                             </p>
                             <p className="text-gray-600">
-                                <strong className="text-gray-800">
-                                    Mess Type:
-                                </strong>{" "}
+                                <strong className="text-gray-800">Mess Type:</strong>{" "}
                                 {messData.messType}
                             </p>
                             <div className="text-gray-600">
@@ -442,6 +448,12 @@ export function Profile() {
             {showMessDetails && <MessDetails closeModal={addMessDetails} />}
             {showVacancyDetails && (
                 <VacancyDetails closeModal={addVacancyDetails} />
+            )}
+            {showEditMess && (
+                <EditMessModal
+                    closeModal={() => setShowEditMess(false)}
+                    messData={messData}
+                />
             )}
         </div>
     );

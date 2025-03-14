@@ -46,4 +46,43 @@ router.get("/user/:email", async (req, res) => {
     }
 });
 
+// Update Mess Route
+router.put("/update/:id", async (req, res) => {
+    try {
+        const { messName, address, messType, district, upazila } = req.body;
+        const messId = req.params.id;
+
+        const updatedMess = await Mess.findByIdAndUpdate(
+            messId,
+            {
+                messName,
+                address,
+                messType,
+                district,
+                upazila,
+            },
+            { new: true }
+        );
+
+        if (!updatedMess) {
+            return res.status(404).json({
+                success: false,
+                message: "Mess not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Mess updated successfully",
+            mess: updatedMess,
+        });
+    } catch (error) {
+        console.error("Error updating mess:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error updating mess",
+        });
+    }
+});
+
 module.exports = router;
