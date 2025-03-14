@@ -78,4 +78,39 @@ router.post("/login", async (req, res) => {
     }
 });
 
+// Update Profile Route
+router.put("/update-profile", async (req, res) => {
+    const { email, username, currentPassword, newPassword } = req.body;
+
+    try {
+        // Find the user
+        const user = await Account.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // If trying to change password, verify current password
+        if (newPassword) {
+            const isPasswordValid = verifyPassword(currentPassword, user.salt, user.password);
+            if (!isPasswordValid) {
+                return res.status(401).json({ success: false, message: "Current password is incorrect" });
+            }
+        }
+
+        // Update user information
+        user.username = username;
+        if (newPassword) {
+            const { salt, hash } = encryptPassword(newPassword);
+            user.password = hash;
+            user.salt = salt;
+        }
+
+        await user.save();
+        res.json({ success: true, message: "Profile updated successfully" });
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ success: false, message: "Error updating profile" });
+    }
+});
+
 module.exports = router;

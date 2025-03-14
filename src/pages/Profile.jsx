@@ -7,6 +7,7 @@ import { MessDetails } from "../components/MessDetails";
 import { VacancyDetails } from "../components/VacancyDetails";
 import { AddPerson } from "../components/addPerson";
 import CreateVacancyModal from "../components/CreateVacancyModal";
+import EditProfileModal from "../components/EditProfileModal";
 import { Link } from "react-router-dom";
 import API from "../api/api";
 
@@ -25,6 +26,7 @@ export function Profile() {
     const [showVacancyModal, setShowVacancyModal] = useState(false);
     const [vacancyRoomDetails, setVacancyRoomDetails] = useState(null);
     const [occupantId, setOccupantId] = useState(null);
+    const [showEditProfile, setShowEditProfile] = useState(false);
 
     // Retrieve user data from location state
     const { username, email, userType } = location.state || {};
@@ -187,9 +189,17 @@ export function Profile() {
                 </div>
                 <div className="profile-details">
                     <div className="profile-info bg-gray-100 p-4 rounded-lg">
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                            Profile Information
-                        </h2>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-semibold text-gray-700">
+                                Profile Information
+                            </h2>
+                            <button
+                                onClick={() => setShowEditProfile(true)}
+                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            >
+                                Edit Profile
+                            </button>
+                        </div>
                         <p className="text-gray-600 mb-2">
                             <strong className="text-gray-800">Email:</strong>{" "}
                             {emailFromStorage}
@@ -411,6 +421,16 @@ export function Profile() {
                     />
                 )}
             </div>
+            {showEditProfile && (
+                <EditProfileModal
+                    closeModal={() => setShowEditProfile(false)}
+                    currentUser={{
+                        username: usernameFromStorage,
+                        email: emailFromStorage,
+                        userType: userTypeFromStorage
+                    }}
+                />
+            )}
             {selectedRoom && (
                 <AddPerson
                     roomId={selectedRoom}
