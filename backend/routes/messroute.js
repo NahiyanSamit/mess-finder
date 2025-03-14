@@ -1,5 +1,6 @@
 const express = require("express");
 const Mess = require("../models/Mess");
+const Vacancy = require("../models/Vacancy");
 const router = express.Router();
 
 // Save mess details
@@ -71,9 +72,21 @@ router.put("/update/:id", async (req, res) => {
             });
         }
 
+        // Update all vacancies associated with this mess
+        await Vacancy.updateMany(
+            { messManagerEmail: updatedMess.managerEmail },
+            {
+                messName: updatedMess.messName,
+                address: updatedMess.address,
+                messType: updatedMess.messType,
+                district: updatedMess.district,
+                upazila: updatedMess.upazila,
+            }
+        );
+
         res.json({
             success: true,
-            message: "Mess updated successfully",
+            message: "Mess and related vacancies updated successfully",
             mess: updatedMess,
         });
     } catch (error) {

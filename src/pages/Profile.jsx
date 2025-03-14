@@ -167,6 +167,24 @@ export function Profile() {
         setShowVacancyModal((prev) => !prev);
     };
 
+    // Add a function to handle mess updates
+    const handleMessUpdate = async (updatedMess) => {
+        try {
+            // Update mess data in state
+            setMessData(updatedMess);
+            
+            // Fetch updated vacancies
+            const response = await API.get(
+                `http://localhost:5000/api/vacancyroute/mess/${emailFromStorage}`
+            );
+            if (response.data.success && response.data.vacancie) {
+                setVacancies(response.data.vacancie);
+            }
+        } catch (error) {
+            console.error("Error refreshing data:", error);
+        }
+    };
+
     return (
         <div className="relative flex flex-col">
             <div className="absolute top-4 left-4">
@@ -453,6 +471,7 @@ export function Profile() {
                 <EditMessModal
                     closeModal={() => setShowEditMess(false)}
                     messData={messData}
+                    onUpdate={handleMessUpdate}
                 />
             )}
         </div>

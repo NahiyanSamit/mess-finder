@@ -3,7 +3,7 @@ import districts from "./districts.json";
 import upazilas from "./upazilas.json";
 import API from "../api/api";
 
-const EditMessModal = ({ closeModal, messData }) => {
+const EditMessModal = ({ closeModal, messData, onUpdate }) => {
     const [messName, setMessName] = useState(messData.messName);
     const [address, setAddress] = useState(messData.address);
     const [messType, setMessType] = useState(messData.messType);
@@ -42,7 +42,10 @@ const EditMessModal = ({ closeModal, messData }) => {
             );
 
             if (response.data.success) {
-                setSuccessMessage("Mess details updated successfully");
+                setSuccessMessage("Mess and vacancy details updated successfully");
+                if (onUpdate) {
+                    onUpdate(response.data.mess);
+                }
                 setTimeout(() => {
                     window.location.reload();
                 }, 1500);
