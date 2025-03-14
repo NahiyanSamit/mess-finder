@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 
 const VacancyDetails = ({ closeModal }) => {
     const [messName, setMessName] = useState("");
+    const [messDescription, setMessDescription] = useState("");
     const [address, setAddress] = useState("");
     const [messType, setMessType] = useState("");
     const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -32,6 +33,7 @@ const VacancyDetails = ({ closeModal }) => {
     const handleSubmit = () => {
         const vacancyData = {
             messName,
+            messDescription,
             messType,
             address,
             upazila: selectedUpazila,
@@ -72,6 +74,20 @@ const VacancyDetails = ({ closeModal }) => {
                             onChange={(e) => setMessName(e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md"
                             placeholder="Enter mess name"
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="messName" className="block text-sm font-medium">
+                            Mess Description
+                        </label>
+                        <input
+                            id="messDescription"
+                            type="text"
+                            value={messName}
+                            onChange={(e) => setMessDescription(e.target.value)}
+                            className="w-full p-2 border border-gray-300 rounded-md"
+                            placeholder="Enter mess description"
                             required
                         />
                     </div>

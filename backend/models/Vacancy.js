@@ -5,6 +5,10 @@ const VacancySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    messDescription : {
+        type : String,
+        required : true,
+    },
     messType : {
         type : String,
         required : true,

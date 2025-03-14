@@ -16,12 +16,14 @@ export function CreateVacancyModal({
     onDelete, // Delete function passed as a prop
 }) {
     const [price, setPrice] = useState(0);
+    const [messDescription, setMessDescription] = useState("");
 
     // handleSubmit function only runs once after form submission
     const handleSubmit = async () => {
         try {
             const response = await API.post("http://localhost:5000/api/vacancyroute/add", {
                 messName,
+                messDescription,
                 messType,
                 address,
                 upazila,
@@ -82,6 +84,7 @@ export function CreateVacancyModal({
                     <p>
                         <strong>Total Occupants:</strong> {totalOccupants}
                     </p>
+
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 font-medium mb-2" htmlFor="price">
@@ -94,6 +97,19 @@ export function CreateVacancyModal({
                         onChange={(e) => setPrice(e.target.value)}
                         className="border border-gray-300 rounded w-full p-2"
                         placeholder="Enter price"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-medium mb-2" htmlFor="price">
+                        Price per Seat:
+                    </label>
+                    <input
+                        type="String"
+                        id="messDescription"
+                        value={messDescription}
+                        onChange={(e) => setMessDescription(e.target.value)}
+                        className="border border-gray-300 rounded w-full p-2"
+                        placeholder="Enter mess description"
                     />
                 </div>
                 <div className="flex justify-end space-x-2">
@@ -124,6 +140,7 @@ export function CreateVacancyModal({
 CreateVacancyModal.propTypes = {
     occupant_id: PropTypes.string.isRequired,
     messName: PropTypes.string.isRequired,
+    messDescription: PropTypes.string.isRequired,
     messType: PropTypes.string.isRequired,
     address: PropTypes.string.isRequired,
     upazila: PropTypes.string.isRequired,

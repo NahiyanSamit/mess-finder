@@ -51,6 +51,13 @@ function Mess() {
                 <p className="text-gray-600 mt-2">
                     <span className="underline">Contact:</span> {mess.messManagerEmail}
                 </p>
+                {/* Line break */}
+                <hr className="my-4" />
+
+                {/* Description of the mess */}
+                <p className="text-gray-600 mt-2">
+                    <span className="underline">Description:</span> {mess.messDescription}
+                </p>
 
                 <button
                     onClick={() => navigate(-1)} // Navigate back to the previous page
