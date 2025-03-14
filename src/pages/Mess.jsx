@@ -59,6 +59,15 @@ function Mess() {
                     <span className="underline">Description:</span> {mess.messDescription}
                 </p>
 
+
+                {/* Images of the mess */}
+                <div className="mt-4 flex flex-wrap gap-4">
+                    {mess.images.map((image, index) => (
+                        <img src={image} alt={`Mess ${index + 1}`} className="w-96 h-80 object-cover rounded-lg" />
+                    ))}
+                    {/* Line break */}
+                    <hr className="my-4 w-full" /> 
+                </div>
                 <button
                     onClick={() => navigate(-1)} // Navigate back to the previous page
                     className="mt-6 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"

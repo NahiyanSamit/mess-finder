@@ -33,6 +33,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messroute", messRoutes);
 app.use("/api/occupantroute", occupantRoutes);
 app.use("/api/vacancyroute", vacancyRoutes);
+app.use('/api/upload', require('./routes/upload'));
 
 // 404 Error Handling
 app.use((req, res, next) => {

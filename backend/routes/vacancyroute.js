@@ -4,7 +4,7 @@ const router = express.Router();
 
 // Save vacancy details
 router.post("/add", async (req, res) => {
-    const { messName, messDescription, messType, address, upazila, district, totalOccupants, messManagerEmail, price } = req.body;
+    const { messName, messDescription, messType, address, upazila, district, totalOccupants, messManagerEmail, price, images } = req.body;
 
     const newVacancy = new Vacancy({
         messName,
@@ -16,6 +16,7 @@ router.post("/add", async (req, res) => {
         totalOccupants,
         messManagerEmail,
         price,
+        images
     });
 
     try {
