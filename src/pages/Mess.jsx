@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import districts from "../components/districts.json";
 import upazilas from "../components/upazilas.json";
+import BookingModal from "../components/BookingModal";
 
 function Mess() {
     const location = useLocation();
     const navigate = useNavigate();
-    // retrive mess data from location state
+    const [showBookingModal, setShowBookingModal] = useState(false);
+    
+    // Retrieve user data from localStorage
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const userEmail = storedUser?.email;
+    const userType = storedUser?.userType;
+
+    // retrieve mess data from location state
     const mess = location.state?.mess;
 
     const getMessLocation = (mess) => {
@@ -28,6 +36,15 @@ function Mess() {
         return totalOccupants === 1 ? "Single" : "Shared";
     };
 
+    const handleBooking = () => {
+        if (!userEmail) {
+            // Redirect to login if user is not logged in
+            navigate("/login", { state: { from: location.pathname } });
+            return;
+        }
+        setShowBookingModal(true);
+    };
+
     return (
         <div>
             <Header />
@@ -38,7 +55,7 @@ function Mess() {
                     {getMessLocation(mess)}
                 </p>
                 <p className="text-gray-600 mt-2">
-                    <span className="underline">Price:</span> {mess.price}
+                    <span className="underline">Price:</span> ৳{mess.price}
                 </p>
                 <p className="text-gray-600 mt-2">
                     <span className="underline">Mess Type:</span>{" "}
@@ -59,22 +76,46 @@ function Mess() {
                     <span className="underline">Description:</span> {mess.messDescription}
                 </p>
 
-
                 {/* Images of the mess */}
                 <div className="mt-4 flex flex-wrap gap-4">
-                    {mess.images.map((image, index) => (
-                        <img src={image} alt={`Mess ${index + 1}`} className="w-96 h-80 object-cover rounded-lg" />
+                    {mess.images?.map((image, index) => (
+                        <img 
+                            key={index}
+                            src={image} 
+                            alt={`Mess ${index + 1}`} 
+                            className="w-96 h-80 object-cover rounded-lg" 
+                        />
                     ))}
                     {/* Line break */}
                     <hr className="my-4 w-full" /> 
                 </div>
-                <button
-                    onClick={() => navigate(-1)} // Navigate back to the previous page
-                    className="mt-6 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                    Go Back
-                </button>
+
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="mt-6 py-2 px-4 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                    >
+                        Go Back
+                    </button>
+                    {userType !== "messManager" && (
+                        <button
+                            onClick={handleBooking}
+                            className="mt-6 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                        >
+                            Book Now
+                        </button>
+                    )}
+                </div>
             </div>
+
+            {showBookingModal && (
+                <BookingModal
+                    closeModal={() => setShowBookingModal(false)}
+                    vacancy={mess}
+                    userEmail={userEmail}
+                    userType={userType}
+                />
+            )}
         </div>
     );
 }

@@ -9,6 +9,7 @@ import { AddPerson } from "../components/addPerson";
 import CreateVacancyModal from "../components/CreateVacancyModal";
 import EditProfileModal from "../components/EditProfileModal";
 import EditMessModal from "../components/EditMessModal";
+import BookingManagement from "../components/BookingManagement";
 import { Link } from "react-router-dom";
 import API from "../api/api";
 
@@ -424,6 +425,12 @@ export function Profile() {
                                     </ul>
                                 </div>
                             ))} 
+                        </div>
+                    )}
+                    {/* Add BookingManagement for mess managers */}
+                    {userTypeFromStorage === "messManager" && (
+                        <div className="w-full">
+                            <BookingManagement messManagerEmail={emailFromStorage} />
                         </div>
                     )}
                 </div>

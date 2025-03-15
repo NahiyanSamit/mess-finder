@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth");
 const messRoutes = require("./routes/messroute");
 const occupantRoutes = require("./routes/occupantroute");
 const vacancyRoutes = require("./routes/vacancyroute");
+const bookingRoutes = require("./routes/bookingRoute");
 
 dotenv.config();
 
@@ -33,10 +34,18 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messroute", messRoutes);
 app.use("/api/occupantroute", occupantRoutes);
 app.use("/api/vacancyroute", vacancyRoutes);
+app.use("/api/booking", bookingRoutes);
 app.use('/api/upload', require('./routes/upload'));
+
+// Debug middleware for routes
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
 
 // 404 Error Handling
 app.use((req, res, next) => {
+    console.log(`404 Not Found: ${req.method} ${req.url}`);
     res.status(404).json({ message: "Route not found" });
 });
 
