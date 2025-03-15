@@ -215,7 +215,7 @@ export function Profile() {
                             </h2>
                             <button
                                 onClick={() => setShowEditProfile(true)}
-                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                             >
                                 Edit Profile
                             </button>
@@ -259,7 +259,7 @@ export function Profile() {
                                 </h2>
                                 <button
                                     onClick={() => setShowEditMess(true)}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                                 >
                                     Edit Mess
                                 </button>
