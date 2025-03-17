@@ -10,12 +10,15 @@ router.post("/create", async (req, res) => {
         const {
             userEmail,
             messId,
+            messName,
             vacancyId,
             messManagerEmail,
             amount,
             paymentMethod,
             transactionId
         } = req.body;
+
+        console.log('Received booking data:', req.body);
 
         // Check if user exists and is not a mess manager
         const user = await Account.findOne({ email: userEmail });
@@ -42,17 +45,22 @@ router.post("/create", async (req, res) => {
             });
         }
 
-        // Create new booking
+        // Create new booking with all required fields
         const newBooking = new Booking({
             userId: user._id,
             userEmail,
             messId,
+            messName,
             vacancyId,
             messManagerEmail,
             amount,
             paymentMethod,
-            transactionId
+            transactionId,
+            status: 'pending',
+            paymentStatus: 'pending'
         });
+
+        console.log('Creating new booking:', newBooking);
 
         await newBooking.save();
 
@@ -65,7 +73,7 @@ router.post("/create", async (req, res) => {
         console.error("Error creating booking:", error);
         res.status(500).json({
             success: false,
-            message: "Error creating booking"
+            message: error.message || "Error creating booking"
         });
     }
 });

@@ -16,25 +16,53 @@ const BookingManagement = ({ messManagerEmail }) => {
             if (response.data.success) {
                 setBookings(response.data.bookings);
             }
+            setLoading(false);
         } catch (error) {
             setError('Error fetching bookings');
             console.error('Error fetching bookings:', error);
-        } finally {
             setLoading(false);
         }
     };
 
     const handleStatusUpdate = async (bookingId, newStatus) => {
         try {
+            console.log('Updating booking status:', { bookingId, newStatus });
             const response = await API.put(`/api/booking/update/${bookingId}`, {
                 status: newStatus
             });
+            console.log('Status update response:', response.data);
+
             if (response.data.success) {
-                // Refresh bookings after update
+                // If booking is confirmed, delete the associated vacancy
+                if (newStatus === 'confirmed') {
+                    const booking = bookings.find(b => b._id === bookingId);
+                    if (booking && booking.vacancyId) {
+                        try {
+                            await API.delete(`/api/vacancyroute/delete/${booking.vacancyId}`);
+                            console.log('Vacancy deleted successfully');
+                        } catch (error) {
+                            console.error('Error deleting vacancy:', error);
+                        }
+                    }
+                }
+                
+                // Update the local state
+                setBookings(prevBookings =>
+                    prevBookings.map(booking =>
+                        booking._id === bookingId
+                            ? { ...booking, status: newStatus }
+                            : booking
+                    )
+                );
+                alert(`Booking ${newStatus} successfully`);
+                // Refresh bookings list
                 fetchBookings();
+            } else {
+                throw new Error(response.data.message || 'Failed to update booking status');
             }
         } catch (error) {
-            console.error('Error updating booking:', error);
+            console.error('Error updating booking status:', error);
+            alert('Error updating booking status: ' + (error.response?.data?.message || error.message));
         }
     };
 
@@ -53,6 +81,7 @@ const BookingManagement = ({ messManagerEmail }) => {
                             <div className="flex justify-between items-start">
                                 <div>
                                     <p><strong>User:</strong> {booking.userEmail}</p>
+                                    <p><strong>Mess Name:</strong> {booking.messName}</p>
                                     <p><strong>Amount:</strong> ৳{booking.amount}</p>
                                     <p><strong>Payment Method:</strong> {booking.paymentMethod}</p>
                                     <p><strong>Transaction ID:</strong> {booking.transactionId}</p>
