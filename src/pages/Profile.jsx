@@ -10,6 +10,7 @@ import CreateVacancyModal from "../components/CreateVacancyModal";
 import EditProfileModal from "../components/EditProfileModal";
 import EditMessModal from "../components/EditMessModal";
 import BookingManagement from "../components/BookingManagement";
+import UserBookings from "../components/UserBookings";
 import { Link } from "react-router-dom";
 import API from "../api/api";
 
@@ -252,185 +253,139 @@ export function Profile() {
                     </div>
                 )}
                 <div className="details-container flex flex-col md:flex-row gap-6">
-                    {messData && (
-                        <div className="mess-details bg-gray-100 p-4 rounded-lg mt-6">
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-xl font-semibold text-gray-700">
-                                    Your Mess Details
-                                </h2>
-                                <button
-                                    onClick={() => setShowEditMess(true)}
-                                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                >
-                                    Edit Mess
-                                </button>
-                            </div>
-                            <p className="text-gray-600">
-                                <strong className="text-gray-800">Name:</strong>{" "}
-                                {messData.messName}
-                            </p>
-                            <p className="text-gray-600">
-                                <strong className="text-gray-800">Location:</strong>{" "}
-                                {messData.address},{" "}
-                                {getUpazilaName(messData.upazila)},{" "}
-                                {getDistrictName(messData.district)}
-                            </p>
-                            <p className="text-gray-600">
-                                <strong className="text-gray-800">Mess Type:</strong>{" "}
-                                {messData.messType}
-                            </p>
-                            <div className="text-gray-600">
-                                <strong className="text-gray-800">
-                                    Rooms:
-                                </strong>
-                                <ul className="mt-2">
-                                    {Array.from(
-                                        { length: messData.totalRooms },
-                                        (_, index) => (
-                                            <li
-                                                key={index}
-                                                className="flex flex-col bg-gray-50 p-2 rounded mb-2"
-                                            >
-                                                <div className="flex justify-between items-center mb-2">
-                                                    <span>
-                                                        <strong>
-                                                            Room {index + 1}:
-                                                        </strong>{" "}
-                                                        Details not available
-                                                    </span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            openPersonDetailsForm(
-                                                                index + 1
-                                                            )
-                                                        }
-                                                        className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
-                                                    >
-                                                        Add Person
-                                                    </button>
-                                                </div>
-                                                <ul className="pl-4 list-disc">
-                                                    {occupantsData?.length >
-                                                    0 ? (
-                                                        occupantsData
-                                                            .filter(
-                                                                (occupant) =>
-                                                                    occupant.roomNo ===
-                                                                    index + 1
-                                                            )
-                                                            .map((occupant) => (
-                                                                <li
-                                                                    key={
-                                                                        occupant._id
-                                                                    }
-                                                                    className="mb-1"
-                                                                >
-                                                                    <strong>
-                                                                        Name:
-                                                                    </strong>{" "}
-                                                                    {
-                                                                        occupant.name
-                                                                    }{" "}
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={toggleVacancyModal(
-                                                                            occupant.roomNo,
-                                                                            occupant._id
-                                                                        )}
-                                                                        className="bg-orange-500 text-white rounded hover:bg-orange-600"
-                                                                    >
-                                                                        Create
-                                                                        Vacancy
-                                                                    </button>
-                                                                    <br />
-                                                                    <strong>
-                                                                        Age:
-                                                                    </strong>{" "}
-                                                                    {
-                                                                        occupant.age
-                                                                    }{" "}
-                                                                    <br />
-                                                                    <strong>
-                                                                        Phone:
-                                                                    </strong>{" "}
-                                                                    {
-                                                                        occupant.phone
-                                                                    }
-                                                                </li>
-                                                            ))
-                                                    ) : (
-                                                        <li>
-                                                            No occupants
-                                                            available
-                                                        </li>
-                                                    )}
-                                                </ul>
-                                            </li>
-                                        )
-                                    )}
-                                </ul>
-                            </div>
-                        </div>
-                    )}
-                    {/* show all vacancy listed by the profile */}
-                    {vacancies && vacancies.length > 0 && (
-                        <div className="vacancy-details bg-gray-100 p-4 rounded-lg mt-6">
-                            <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                                Your Vacancy Details
-                            </h2>
-                            {vacancies.map((vacancy, index) => (
-                                <div
-                                    key={vacancy._id}
-                                    className="flex flex-col bg-gray-50 p-2 rounded mb-2"
-                                >
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span>
-                                            <strong>
-                                                Vacancy {index + 1}:
-                                            </strong>{" "}
-                                            {vacancy.messName}
-                                        </span>
+                    {/* Show mess details and vacancies for mess managers */}
+                    {userTypeFromStorage === "messManager" ? (
+                        <>
+                            {messData && (
+                                <div className="mess-details bg-gray-100 p-4 rounded-lg mt-6">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h2 className="text-xl font-semibold text-gray-700">
+                                            Your Mess Details
+                                        </h2>
                                         <button
-                                            type="button"
-                                            onClick={DeleteVacancy(vacancy._id)}
-                                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
+                                            onClick={() => setShowEditMess(true)}
+                                            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                                         >
-                                            Delete
+                                            Edit Mess
                                         </button>
                                     </div>
-                                    <ul className="pl-4 list-disc">
-                                        <li className="mb-1">
-                                            <strong>Name:</strong>{" "}
-                                            {vacancy.messName}
-                                        </li>
-                                        <li className="mb-1">
-                                            <strong>Address:</strong>{" "}
-                                            {vacancy.address},{" "}
-                                            {getUpazilaName(vacancy.upazila)},{" "}
-                                            {getDistrictName(vacancy.district)}
-                                        </li>
-                                        <li className="mb-1">
-                                            <strong>Type:</strong>{" "}
-                                            {vacancy.messType}
-                                        </li>
-                                        <li className="mb-1">
-                                            <strong>Price:</strong>{" "}
-                                            {vacancy.price}
-                                        </li>
-                                        <li className="mb-1">
-                                            <strong>Occupants:</strong>{" "}
-                                            {vacancy.totalOccupants}
-                                        </li>
-                                    </ul>
+                                    <p className="text-gray-600">
+                                        <strong className="text-gray-800">Name:</strong>{" "}
+                                        {messData.messName}
+                                    </p>
+                                    <p className="text-gray-600">
+                                        <strong className="text-gray-800">Location:</strong>{" "}
+                                        {messData.address},{" "}
+                                        {getUpazilaName(messData.upazila)},{" "}
+                                        {getDistrictName(messData.district)}
+                                    </p>
+                                    <p className="text-gray-600">
+                                        <strong className="text-gray-800">Mess Type:</strong>{" "}
+                                        {messData.messType}
+                                    </p>
+                                    <div className="text-gray-600">
+                                        <strong className="text-gray-800">
+                                            Rooms:
+                                        </strong>
+                                        <ul className="mt-2">
+                                            {Array.from(
+                                                { length: messData.totalRooms },
+                                                (_, index) => (
+                                                    <li
+                                                        key={index}
+                                                        className="flex flex-col bg-gray-50 p-2 rounded mb-2"
+                                                    >
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <span>
+                                                                <strong>
+                                                                    Room {index + 1}:
+                                                                </strong>{" "}
+                                                                Details not available
+                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    openPersonDetailsForm(
+                                                                        index + 1
+                                                                    )
+                                                                }
+                                                                className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+                                                            >
+                                                                Add Person
+                                                            </button>
+                                                        </div>
+                                                        <ul className="pl-4 list-disc">
+                                                            {occupantsData?.length >
+                                                            0 ? (
+                                                                occupantsData
+                                                                    .filter(
+                                                                        (occupant) =>
+                                                                            occupant.roomNo ===
+                                                                            index + 1
+                                                                    )
+                                                                    .map((occupant) => (
+                                                                        <li
+                                                                            key={
+                                                                                occupant._id
+                                                                            }
+                                                                            className="mb-1"
+                                                                        >
+                                                                            <strong>
+                                                                                Name:
+                                                                            </strong>{" "}
+                                                                            {
+                                                                                occupant.name
+                                                                            }{" "}
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={toggleVacancyModal(
+                                                                                    occupant.roomNo,
+                                                                                    occupant._id
+                                                                                )}
+                                                                                className="bg-orange-500 text-white rounded hover:bg-orange-600"
+                                                                            >
+                                                                                Create
+                                                                                Vacancy
+                                                                            </button>
+                                                                            <br />
+                                                                            <strong>
+                                                                                Age:
+                                                                            </strong>{" "}
+                                                                            {
+                                                                                occupant.age
+                                                                            }{" "}
+                                                                            <br />
+                                                                            <strong>
+                                                                                Phone:
+                                                                            </strong>{" "}
+                                                                            {
+                                                                                occupant.phone
+                                                                            }
+                                                                        </li>
+                                                                    ))
+                                                            ) : (
+                                                                <li>
+                                                                    No occupants
+                                                                    available
+                                                                </li>
+                                                            )}
+                                                        </ul>
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    </div>
                                 </div>
-                            ))} 
-                        </div>
-                    )}
-                    {/* Add BookingManagement for mess managers */}
-                    {userTypeFromStorage === "messManager" && (
+                            )}
+                            {/* Add BookingManagement for mess managers */}
+                            <div className="w-full">
+                                <BookingManagement messManagerEmail={emailFromStorage} />
+                            </div>
+                        </>
+                    ) : (
+                        // Show bookings for regular users
                         <div className="w-full">
-                            <BookingManagement messManagerEmail={emailFromStorage} />
+                            <UserBookings userEmail={emailFromStorage} />
                         </div>
                     )}
                 </div>

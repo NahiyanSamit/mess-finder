@@ -14,6 +14,10 @@ const bookingSchema = new mongoose.Schema({
         ref: 'Mess',
         required: true,
     },
+    messName: {
+        type: String,
+        required: true,
+    },
     vacancyId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Vacancy',
