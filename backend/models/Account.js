@@ -29,6 +29,20 @@ const accountSchema = new mongoose.Schema({
             return this.userType === "messManager";
         },
     },
+    paymentMethods: {
+        bkash: {
+            enabled: { type: Boolean, default: false },
+            number: { type: String }
+        },
+        nagad: {
+            enabled: { type: Boolean, default: false },
+            number: { type: String }
+        },
+        rocket: {
+            enabled: { type: Boolean, default: false },
+            number: { type: String }
+        }
+    }
 });
 
 const Account = mongoose.model("Accounts", accountSchema);

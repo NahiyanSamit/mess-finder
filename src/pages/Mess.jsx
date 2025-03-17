@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import districts from "../components/districts.json";
 import upazilas from "../components/upazilas.json";
 import BookingModal from "../components/BookingModal";
+import API from "../api/api";
 
 function Mess() {
     const location = useLocation();
     const navigate = useNavigate();
     const [showBookingModal, setShowBookingModal] = useState(false);
+    const [managerDetails, setManagerDetails] = useState(null);
     
     // Retrieve user data from localStorage
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -17,6 +19,23 @@ function Mess() {
 
     // retrieve mess data from location state
     const mess = location.state?.mess;
+
+    useEffect(() => {
+        const fetchManagerDetails = async () => {
+            try {
+                const response = await API.get(`http://localhost:5000/api/auth/user/${mess.messManagerEmail}`);
+                if (response.data.success) {
+                    setManagerDetails(response.data.user);
+                }
+            } catch (error) {
+                console.error("Error fetching manager details:", error);
+            }
+        };
+
+        if (mess?.messManagerEmail) {
+            fetchManagerDetails();
+        }
+    }, [mess?.messManagerEmail]);
 
     const getMessLocation = (mess) => {
         return `${mess.address}, ${getUpazilaName(
@@ -34,6 +53,17 @@ function Mess() {
     };
     const getRoomType = (totalOccupants) => {
         return totalOccupants === 1 ? "Single" : "Shared";
+    };
+
+    const getPaymentMethods = (details) => {
+        if (!details || !details.paymentMethods) return '';
+        
+        const methods = [];
+        if (details.paymentMethods.bkash.enabled) methods.push('bKash');
+        if (details.paymentMethods.nagad.enabled) methods.push('Nagad');
+        if (details.paymentMethods.rocket.enabled) methods.push('Rocket');
+        
+        return methods.length > 0 ? `(${methods.join('/')})` : '';
     };
 
     const handleBooking = () => {
@@ -66,8 +96,16 @@ function Mess() {
                     {getRoomType(mess.totalOccupants) + " (" + mess.totalOccupants + " Person)"}
                 </p>
                 <p className="text-gray-600 mt-2">
-                    <span className="underline">Contact:</span> {mess.messManagerEmail}
+                    <span className="underline">Contact:</span>{" "}
+                    <a href={`mailto:${mess.messManagerEmail}`} className="text-blue-600 hover:underline">
+                        {mess.messManagerEmail}
+                    </a>
                 </p>
+                <p className="text-gray-600 mt-2">
+                    <span className="underline">Phone & Payment:</span>{" "}
+                    {managerDetails?.phone} {managerDetails && getPaymentMethods(managerDetails)}
+                </p>
+
                 {/* Line break */}
                 <hr className="my-4" />
 
@@ -114,6 +152,7 @@ function Mess() {
                     vacancy={mess}
                     userEmail={userEmail}
                     userType={userType}
+                    managerDetails={managerDetails}
                 />
             )}
         </div>

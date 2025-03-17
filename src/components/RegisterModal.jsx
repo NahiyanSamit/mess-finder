@@ -11,6 +11,11 @@ const RegisterModal = ({ closeModal }) => {
     const [userType, setUserType] = useState("user"); // default to 'user'
     const [phone, setPhone] = useState(""); // state for phone number
     const [phoneValid, setPhoneValid] = useState(true); // Track phone validation
+    const [paymentMethods, setPaymentMethods] = useState({
+        bkash: { enabled: false, number: "" },
+        nagad: { enabled: false, number: "" },
+        rocket: { enabled: false, number: "" }
+    });
 
     // Close modal if clicked outside
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,6 +43,17 @@ const RegisterModal = ({ closeModal }) => {
         setPhoneValid(phoneRegex.test(value)); // Update validity based on the regex
     };
 
+    const handlePaymentMethodChange = (method) => {
+        setPaymentMethods(prev => ({
+            ...prev,
+            [method]: {
+                ...prev[method],
+                enabled: !prev[method].enabled,
+                number: !prev[method].enabled ? phone : ""
+            }
+        }));
+    };
+
     useEffect(() => {
         document.addEventListener("click", handleOutsideClick);
         return () => {
@@ -58,13 +74,14 @@ const RegisterModal = ({ closeModal }) => {
         // Show loading or any other indication if necessary
         try {
             const response = await API.post(
-                "http://localhost:5000/api/auth/register" ,
+                "http://localhost:5000/api/auth/register",
                 {
                     username,
                     email,
                     password,
                     userType,
                     phone,
+                    paymentMethods
                 }
             );
 
@@ -78,6 +95,7 @@ const RegisterModal = ({ closeModal }) => {
             setPassword("");
             setConfirmPassword("");
             setPhone("");
+            setUserType("user");
         } catch (error) {
             console.error("Error during registration:", error);
             alert(
@@ -238,6 +256,47 @@ const RegisterModal = ({ closeModal }) => {
                                     Please enter a valid phone number.
                                 </p>
                             )}
+                        </div>
+                    )}
+
+                    {/* Payment methods */}
+                    {userType === "messManager" && (
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                                Payment Methods
+                            </label>
+                            <div className="space-y-2">
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="bkash"
+                                        checked={paymentMethods.bkash.enabled}
+                                        onChange={() => handlePaymentMethodChange('bkash')}
+                                        className="mr-2"
+                                    />
+                                    <label htmlFor="bkash">bKash</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="nagad"
+                                        checked={paymentMethods.nagad.enabled}
+                                        onChange={() => handlePaymentMethodChange('nagad')}
+                                        className="mr-2"
+                                    />
+                                    <label htmlFor="nagad">Nagad</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="rocket"
+                                        checked={paymentMethods.rocket.enabled}
+                                        onChange={() => handlePaymentMethodChange('rocket')}
+                                        className="mr-2"
+                                    />
+                                    <label htmlFor="rocket">Rocket</label>
+                                </div>
+                            </div>
                         </div>
                     )}
 

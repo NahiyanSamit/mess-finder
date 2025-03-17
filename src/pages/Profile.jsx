@@ -374,7 +374,7 @@ export function Profile() {
                         </div>
                     )}
                     {/* show all vacancy listed by the profile */}
-                    {vacancies && (
+                    {vacancies && vacancies.length > 0 && (
                         <div className="vacancy-details bg-gray-100 p-4 rounded-lg mt-6">
                             <h2 className="text-xl font-semibold text-gray-700 mb-4">
                                 Your Vacancy Details
