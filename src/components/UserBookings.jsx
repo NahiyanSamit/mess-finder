@@ -2,11 +2,29 @@ import React, { useState, useEffect } from 'react';
 import API from '../api/api';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import districts from '../components/districts.json';
+import upazilas from '../components/upazilas.json';
 
 const UserBookings = ({ userEmail }) => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [generatingPdf, setGeneratingPdf] = useState(false);
+    const [messDetails, setMessDetails] = useState({});
+
+    const getDistrictName = (districtId) => {
+        const district = districts.find((d) => d.id === districtId);
+        return district ? district.name : "Unknown District";
+    };
+
+    const getUpazilaName = (upazilaId) => {
+        const upazila = upazilas.find((u) => u.id === upazilaId);
+        return upazila ? upazila.name : "Unknown Upazila";
+    };
+
+    const getMessLocation = (mess) => {
+        if (!mess) return 'N/A';
+        return `${mess.address}, ${getUpazilaName(mess.upazila)}, ${getDistrictName(mess.district)}`;
+    };
 
     useEffect(() => {
         fetchBookings();
@@ -16,7 +34,27 @@ const UserBookings = ({ userEmail }) => {
         try {
             const response = await API.get(`/api/booking/user/${userEmail}`);
             if (response.data.success) {
-                setBookings(response.data.bookings);
+                const bookingsData = response.data.bookings;
+                console.log('Detailed booking data:', JSON.stringify(bookingsData, null, 2));
+                setBookings(bookingsData);
+                
+                // Fetch mess details for each booking
+                for (const booking of bookingsData) {
+                    try {
+                        console.log('Fetching mess details for booking:', booking);
+                        const messResponse = await API.get(`/api/messroute/user/${booking.messManagerEmail}`);
+                        console.log('Mess response:', messResponse.data);
+                        if (messResponse.data.success && messResponse.data.mess) {
+                            setMessDetails(prev => ({
+                                ...prev,
+                                [booking.messId]: messResponse.data.mess
+                            }));
+                        }
+                    } catch (error) {
+                        console.error('Error fetching mess details:', error);
+                        console.error('Failed booking:', booking);
+                    }
+                }
             }
             setLoading(false);
         } catch (error) {
@@ -25,11 +63,27 @@ const UserBookings = ({ userEmail }) => {
         }
     };
 
+    const getMessName = (booking) => {
+        if (!booking.messManagerEmail) {
+            console.log('No messManagerEmail in booking:', booking);
+            return 'Loading...';
+        }
+        const messDetail = messDetails[booking.messId];
+        if (!messDetail) {
+            return 'Loading...';
+        }
+        return messDetail.messName || 'N/A';
+    };
+
     const generateInvoice = async (booking) => {
         if (generatingPdf) return;
         setGeneratingPdf(true);
 
         try {
+            const messName = getMessName(booking);
+            const messDetail = messDetails[booking.messId];
+            const messAddress = getMessLocation(messDetail);
+            
             // Create new PDF document with explicit configuration
             const doc = new jsPDF({
                 orientation: 'p',
@@ -52,13 +106,13 @@ const UserBookings = ({ userEmail }) => {
             // Table data
             const tableData = [
                 ['Booking ID', booking._id || 'N/A'],
-                ['Mess Name', booking.messName || 'N/A'],
+                ['Mess Name', messName],
+                ['Mess Address', messAddress],
                 ['Amount', booking.amount ? `৳${booking.amount}` : 'N/A'],
                 ['Payment Method', booking.paymentMethod ? booking.paymentMethod.toUpperCase() : 'N/A'],
                 ['Transaction ID', booking.transactionId || 'N/A'],
                 ['Booking Date', booking.bookingDate ? new Date(booking.bookingDate).toLocaleDateString() : 'N/A'],
                 ['Status', booking.status ? booking.status.toUpperCase() : 'N/A'],
-                ['Payment Status', booking.paymentStatus ? booking.paymentStatus.toUpperCase() : 'N/A']
             ];
 
             // Generate table
@@ -119,7 +173,7 @@ const UserBookings = ({ userEmail }) => {
                         <div key={booking._id} className="bg-white p-4 rounded-lg shadow">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p><strong>Mess:</strong> {booking.messName}</p>
+                                    <p><strong>Mess:</strong> {getMessName(booking)}</p>
                                     <p><strong>Amount:</strong> ৳{booking.amount}</p>
                                     <p><strong>Payment Method:</strong> {booking.paymentMethod}</p>
                                     <p><strong>Transaction ID:</strong> {booking.transactionId}</p>
@@ -131,16 +185,6 @@ const UserBookings = ({ userEmail }) => {
                                             'text-yellow-600'
                                         }`}>
                                             {booking.status.toUpperCase()}
-                                        </span>
-                                    </p>
-                                    <p>
-                                        <strong>Payment Status:</strong>{" "}
-                                        <span className={`font-semibold ${
-                                            booking.paymentStatus === 'completed' ? 'text-green-600' :
-                                            booking.paymentStatus === 'failed' ? 'text-red-600' :
-                                            'text-yellow-600'
-                                        }`}>
-                                            {booking.paymentStatus.toUpperCase()}
                                         </span>
                                     </p>
                                     <p><strong>Booking Date:</strong> {new Date(booking.bookingDate).toLocaleDateString()}</p>
